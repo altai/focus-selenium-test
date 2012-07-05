@@ -1,0 +1,184 @@
+Feature: Check security group rules functionality
+
+    Scenario: Setup prerequisites
+        Require setup " login ! image ! network ! project ! security_group "
+
+    Scenario: Navigate to Security Groups page
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        When I click project menu item "Security Groups"
+        Then I see page subheader "List of existing security groups"
+
+    Scenario: Create groups for test
+        Given I see page subheader "List of existing security groups"
+        When I click button "Add"
+        Then I see page subheader "Add new security group"
+        When I type "sgt1" in field "Name"
+        And I type "sgt1" in field "Description"
+        And I click button "Create"
+        Then I see success notification "Security group sgt1 created."
+        And I see page subheader "List of existing security groups"
+
+        When I click button "Add"
+        When I type "sgt2" in field "Name"
+        And I type "sgt2" in field "Description"
+        And I click button "Create"
+        Then I see success notification "Security group sgt2 created."
+
+
+    Scenario: Check Security Group Rules page
+        Given I open page "/"
+        And I see page title "Altai Private Cloud"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        When I click project menu item "Security Groups"
+        Then I see page subheader "List of existing security groups"
+        When I click "sgt1" in line containing "sgt1", row "Name"
+        Then I see page header "{{ projects.0.name }}: Project security groups"
+        And I see page subheader "Security group details"
+        And I see project menu item "Security Groups" active
+        I remember table:
+            | IP Protocol | From Port | To Port | IP Range | Source Group | Actions |
+
+    Scenario: Check general rule works
+        When I click project menu item "Security Groups"
+        And I click "sgt1" in line containing "sgt1", row "Name"
+        Then I see page header "{{ projects.0.name }}: Project security groups"
+        And I see page subheader "Security group details"
+
+        When I click button "Add"
+        Then I see page header "{{ projects.0.name }}: Project security groups"
+        And I see page subheader "Add new rule"
+
+        When I select "TCP" in field "IP Protocol"
+        And I type "1" in field "from_port"
+        And I type "65535" in field "to_port"
+        And I click button "Create"
+
+        Then I see success notification "Security group rule successfully added"
+        Then I see page header "{{ projects.0.name }}: Project security groups"
+        And I see page subheader "Security group details"
+        And I see in table:
+            | IP Protocol | From Port | To Port | IP Range  | Source Group | Actions |
+            | tcp         | 1         | 65535   | 0.0.0.0/0 | empty        | delete  |
+
+    Scenario: Check single port rule works
+        When I click project menu item "Security Groups"
+        And I click "sgt1" in line containing "sgt1", row "Name"
+        Then I see page subheader "Security group details"
+
+        And I click button "Add"
+        Then I see page subheader "Add new rule"
+        When I select "TCP" in field "IP Protocol"
+        And I type "222" in field "from_port"
+        And I type "222" in field "to_port"
+        And I click button "Create"
+        Then I see success notification "Security group rule successfully added"
+        Then I see page header "{{ projects.0.name }}: Project security groups"
+        And I see page subheader "Security group details"
+        And I see in table:
+            | IP Protocol | From Port | To Port | IP Range  | Source Group | Actions |
+            | tcp         | 1         | 65535   | 0.0.0.0/0 | empty        | delete  |
+            | tcp         | 222       | 222     | 0.0.0.0/0 | empty        | delete  |
+
+
+    Scenario: Check source group rule works
+        When I click project menu item "Security Groups"
+        And I click "sgt1" in line containing "sgt1", row "Name"
+        Then I see page subheader "Security group details"
+
+        And I click button "Add"
+        Then I see page subheader "Add new rule"
+        When I select "UDP" in field "IP Protocol"
+        And I type "77" in field "from_port"
+        And I type "77" in field "to_port"
+        And I select "sgt2" in field "group_id"
+        And I click button "Create"
+        Then I see success notification "Security group rule successfully added"
+        Then I see page header "{{ projects.0.name }}: Project security groups"
+        And I see page subheader "Security group details"
+        And I see in table:
+            | IP Protocol | From Port | To Port | IP Range  | Source Group | Actions |
+            | tcp         | 1         | 65535   | 0.0.0.0/0 | empty        | delete  |
+            | tcp         | 222       | 222     | 0.0.0.0/0 | empty        | delete  |
+            | udp         | 77        | 77      | empty     | sgt2         | delete  |
+
+    Scenario: Check CIDR parsing works
+        When I click project menu item "Security Groups"
+        And I click "sgt1" in line containing "sgt1", row "Name"
+        Then I see page subheader "Security group details"
+
+        And I click button "Add"
+        Then I see page subheader "Add new rule"
+        When I select "UDP" in field "IP Protocol"
+        And I type "88" in field "from_port"
+        And I type "88" in field "to_port"
+        And I type "20.20.20.20" in field "CIDR"
+        And I click button "Create"
+        Then I see error notification "Invalid cidr 20.20.20.20."
+
+        When I type "20" in field "CIDR"
+        And I click button "Create"
+        Then I see error notification "Invalid cidr 20."
+
+        When I type "192.168.192.168/30" in field "CIDR"
+        And I click button "Create"
+        Then I see success notification "Security group rule successfully added"
+        Then I see page header "{{ projects.0.name }}: Project security groups"
+        And I see page subheader "Security group details"
+        And I see in table:
+            | IP Protocol | From Port | To Port | IP Range  | Source Group | Actions |
+            | tcp         | 1         | 65535   | 0.0.0.0/0 | empty        | delete  |
+            | tcp         | 222       | 222     | 0.0.0.0/0 | empty        | delete  |
+            | udp         | 77        | 77      | empty     | sgt2         | delete  |
+            | udp         | 88        | 88      | 192.168.192.168/30 | empty        | delete  |
+
+
+    Scenario: Check rule deletion works
+        When I click project menu item "Security Groups"
+        And I click "sgt1" in line containing "sgt1", row "Name"
+        Then I see page subheader "Security group details"
+
+        When I click "delete" in line containing "65535", row "Actions"
+        And I click modal dialog button "Yes, delete"
+
+        Then I see success notification "Security group rule successfully deleted"
+        And I see page header "{{ projects.0.name }}: Project security groups"
+        And I see page subheader "Security group details"
+        And I see in table:
+            | IP Protocol | From Port | To Port | IP Range  | Source Group | Actions |
+            | tcp         | 222       | 222     | 0.0.0.0/0 | empty        | delete  |
+            | udp         | 77        | 77      | empty     | sgt2         | delete  |
+            | udp         | 88        | 88      | 192.168.192.168/30 | empty        | delete  |
+
+
+    Scenario: Check rules cleaning
+        When I click project menu item "Security Groups"
+        And I click "delete" in line containing "sgt1", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        Then I see success notification "Security group successfully deleted"
+        And I see page subheader "List of existing security groups"
+
+        When I click button "Add"
+        Then I see page subheader "Add new security group"
+        When I type "sgt1" in field "Name"
+        And I type "sgt1" in field "Description"
+        And I click button "Create"
+        Then I see success notification "Security group sgt1 created."
+        And I see page subheader "List of existing security groups"
+
+        When I click "sgt1" in line containing "sgt1", row "Name"
+        Then I see table:
+            | IP Protocol | From Port | To Port | IP Range  | Source Group | Actions |
+
+
+    Scenario: Clean
+        I click project menu item "Security Groups"
+        Given I see page subheader "List of existing security groups"
+        When I click "delete" in line containing "sgt1", row "Actions"
+        And I click modal dialog button "Yes, delete"
+
+    Scenario: Clean1
+        When I click "delete" in line containing "sgt2", row "Actions"
+        And I click modal dialog button "Yes, delete"

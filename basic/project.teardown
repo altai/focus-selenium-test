@@ -1,0 +1,16 @@
+Feature: Projects cleaning
+
+{% for project in projects %}
+    {% for user in project.users %}
+    Scenario: Remove user {{ user }} from  project {{ project.name }}
+        Given I open page "/"
+        When I click top menu "Global administration"
+        And I click project menu item "Users"
+        And I click "{{ user }}" in line containing "{{ user }}", row "Username"
+        And I click button "Remove"
+    {% endfor %}
+    Scenario: Remove project
+        When I click project menu item "Projects"
+        When I click "delete" in line containing "{{ project.name }}", row "Actions"
+        And I click modal dialog button "Yes, delete"
+{% endfor %}

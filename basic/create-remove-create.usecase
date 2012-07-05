@@ -1,0 +1,24 @@
+    Scenario: Check if we have Create-Delete-Create problem. (Create-Delete here. Later tests will create them again and check functionality)
+        #TODO Given I see page title "Global administration: Networks"
+      {% for network in networks %}
+        When I click page menu item "Add"
+        And I type "{{ network.CIDR }}" in field "CIDR"
+        And I type "{{ network.VLAN }}" in field "VLAN"
+        And I click button "Create"
+        Then I see success notification "Network net{{ network.VLAN }} created."
+      {% endfor %}
+        And I see table:
+            | Name | CIDR | Netmask | VLAN | Actions |
+      {% for network in networks %}
+            | net{{ network.VLAN }} | {{ network.CIDR }} | not_empty | {{ network.VLAN }} | delete |
+      {% endfor %}
+
+    Scenario: Clean
+      {% for network in networks %}
+        When I click "delete" in line containing "{{ network.VLAN }}", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        Then I see success notification "Network deleted."
+      {% endfor %}
+        And I see table:
+            | Name | CIDR | Netmask | VLAN | Actions |
+

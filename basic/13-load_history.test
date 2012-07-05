@@ -1,0 +1,39 @@
+Feature: Test Load History
+
+    Scenario: Setup prerequisites
+        Require setup " login "
+
+    Scenario: Check project menu "Load History"
+        Given I open page "/"
+        And I see page title "Altai Private Cloud"
+        When I click top menu "Global administration"
+        And I click project menu item "Load History"
+        Then I see page header "Global administration: Load history"
+        Then I see page subheader "CPU/Load Avg./Mem/free space/io-wait history of every compute node"
+        Then I see table:
+            | Hostname  | Zabbix Status | Compute Status | Links     |
+            | not_empty | on            | on             | show graph |
+
+    Scenario: Check "Load History" graphs for master node
+        When I click "show graph" in line containing "{{ cloud.node }}", row "Links"
+        Then I see page subheader "Graphics for host {{ cloud.node }}"
+
+        {% for period in ['6h', '1d', '1w', '1m', '1y'] %}
+            And I click period menu item "{{ period }}"
+            Then I see period images
+        {% endfor %}
+
+    Scenario: Check "Load History" graphs for compute node
+        Given I open page "/"
+        And I see page title "Altai Private Cloud"
+        When I click top menu "Global administration"
+        And I click project menu item "Load History"
+        Then I see page header "Global administration: Load history"
+
+        When I click "show graph" in line containing "{{ cloud.node1 }}", row "Links"
+        Then I see page subheader "Graphics for host {{ cloud.node1 }}"
+
+        {% for period in ['6h', '1d', '1w', '1m', '1y'] %}
+            And I click period menu item "{{ period }}"
+            Then I see period images
+        {% endfor %}

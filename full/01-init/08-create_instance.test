@@ -1,0 +1,17 @@
+Feature: Add project
+
+    Scenario: Navigate to instance page
+
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        And I click project menu item "Virtual Machines"
+
+    Scenario: Fill the form to add new instance
+        When I click project menu item "Virtual Machines"
+        And I click button "Add"
+        And I select "{{ instance.image }}" in field "Image"
+        And I select "{{ instance.flavor }}" in field "Flavor"
+        And I type "{{ instance.name }}" in field "Name"
+        And I click button "Spawn it"
+        When I refresh page until I see "ACTIVE" in line containing "{{ instance.name }}"

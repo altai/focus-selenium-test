@@ -1,0 +1,8 @@
+Feature: Remove invited member
+
+    Scenario: Open login page
+        When I open page "/"
+        When I click top menu "Global administration"
+        And I click project menu item "Users"
+        And I click "delete" in line containing "{{ member.username }}", row "Actions"
+        And I click modal dialog button "Yes, delete"

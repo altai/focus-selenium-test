@@ -1,0 +1,109 @@
+Feature: Test projects workflow
+
+    Scenario: Setup prerequisites
+        Require setup " login ! network "
+
+    Scenario: Check Projects administration page
+        Given I open page "/"
+        And I see page title "Altai Private Cloud"
+        When I click top menu "Global administration"
+        Then I see page header "Global administration: Virtual machines"
+        And I see project menu item "Virtual machines" active
+        When I click project menu item "Projects"
+        Then I see page header "Global administration: Projects"
+        Then I see project menu item "Projects" active
+        And I see page subheader "List of projects"
+        And I remember table:
+            | Project Name | Description | Enabled | Actions |
+
+
+    Scenario: Fill the form to add new project
+        I click project menu item "Projects"
+        Given I see page subheader "List of projects"
+        When I click button "Add"
+        Then I see page header "Global administration: Projects"
+        Then I see page subheader "Add new project"
+        And I type "full-project-test" in field "Name"
+        #And I select "net{{ networks.1.VLAN }} ({{ networks.1.CIDR }}, {{ networks.1.VLAN }})" in field "Network"
+        And I click button "Create"
+        Then I see success notification "Project created."
+        #And I see page header "Global administration: Projects"
+        And I see in table:
+            | Project Name      | Description | Enabled | Actions |
+            | full-project-test | empty       | yes     | delete  |
+
+    Scenario: Check project addition form works correctly
+        I click project menu item "Projects"
+        Given I see page subheader "List of projects"
+        When I click button "Add"
+        Then I see page subheader "Add new project"
+        And I click button "Create"
+        Then I see error tip "This field is required."
+
+        When I type "full-project-test" in field "Description"
+        And I click button "Create"
+        Then I see error tip "This field is required."
+
+        #TODO: UNCOMMENT after https://trello.com/c/545vO2Wx
+        #When I type "project description" in field "Description"
+        #And I type "full-project-test" in field "Name"
+        #And I click button "Create"
+        #Then I see error notification "Project full-project-test already exist"
+
+        When I type "project description" in field "Description"
+        And I type "full-project-test-2" in field "Name"
+        #And I select "net{{ networks.2.VLAN }} ({{ networks.2.CIDR }}, {{ networks.2.VLAN }})" in field "Network"
+        And I click button "Create"
+        Then I see success notification "Project created."
+        And I see in table:
+            | Project Name        | Description         | Enabled | Actions |
+            | full-project-test   | empty               | yes     | delete  |
+            | full-project-test-2 | project description | yes     | delete  |
+
+    Scenario: Check Add user to project page
+        I click project menu item "Projects"
+        Given I see page subheader "List of projects"
+        When I click project menu item "Users"
+        And I click "{{ admin.username }}" in line containing "{{ admin.login }}", row "Username"
+        And I select "full-project-test" in field "Add Project"
+        And I click button "Add"
+        Then I see success notification "User was added to project"
+
+    Scenario: Check I can see dashboard for full-project-test
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        And I click "full-project-test" in line containing "full-project-test", row "Project name"
+        Then I see project menu item "Virtual Machines" active
+        And I see page header "full-project-test: Virtual Machines"
+
+    Scenario: Check user project actions works correctly
+        Given I open page "/"
+        I click top menu "Global administration"
+        I click project menu item "Projects"
+        Given I see page subheader "List of projects"
+        And I click project menu item "Users"
+        And I click "{{ admin.username }}" in line containing "{{ admin.login }}", row "Username"
+        And I select "full-project-test" in field "Remove Project"
+        And I click button "Remove"
+        Then I see success notification "User was removed from project"
+
+    Scenario: Check project actions works correctly
+        I click project menu item "Projects"
+        Given I see page subheader "List of projects"
+        When I click "delete" in line containing "full-project-test-2", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        I see page header "Global administration: Projects"
+        And I see success notification "Project removed successfully."
+        And I see in table:
+            | Project Name      | Description | Enabled | Actions |
+            | full-project-test | empty       | yes     | delete  |
+
+    Scenario: Clean
+        I click project menu item "Projects"
+        Given I see page subheader "List of projects"
+        When I click "delete" in line containing "full-project-test", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        I see page header "Global administration: Projects"
+        And I see success notification "Project removed successfully."
+        And I see in table:
+            | Project Name | Description | Enabled | Actions |

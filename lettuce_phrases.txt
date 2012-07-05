@@ -1,0 +1,72 @@
+General: 
+    I open browser
+    I close browser
+    I wait "60" seconds
+    I wait page "/global/images/" for "10" seconds
+    When I refresh page "240" seconds until I see "ACTIVE" in line "test-instance-to-delete"
+    debug
+    I open page "link"
+    I find window with title "noVNC"
+    I see text "test" in element with css "selector"
+    I click link "any link on the page"
+
+
+Top (system) menu:
+    I click top menu "Text"
+    I click top menu "Text", sub-menu "Text"
+    I see page header "Text"
+    I see page subheader "Text"
+
+Project menu:
+    I click project menu item "Text"
+    I see project menu item "Text" active
+
+
+Form:
+    I type "Pupkin" in field "Name"
+    I click button "Cancel"
+    I select "Ukraine" in field "Country"
+    I cannot click form button "Add"
+    I select file "Path"
+    I click radio button "Text" in field "Label"
+
+Table:
+    I see table:
+        | Name     | info1 | Actions |
+        | Pupkin   |       | delete  |
+    I click "delete" in line containing "instance1", row "Actions"
+    I see "Ukraine" in line "Country"
+    I see "Horrible things" in document
+
+
+    I remebmer table: # Save table state. It is necessary if table is not empty before test
+        | Name     | info1 | Actions |
+
+    
+    I see in table:
+        | Name     | info1 | Actions |
+        | Pupkin   |       | delete  |
+
+Notification:
+    I see success notification "Added successfuly"
+    I see error notification "Failed to Add"
+    I see error tip "Field is required"
+    I see modal dialog "Header" contains "Message"
+    I click modal dialog button "Okey"
+
+Email:
+    I open invitation email as "login", "password"
+    I open recovery email as "login", "password"
+
+Misc:
+    I search and remember IP of instance "pingtest2" # While we don't know IP of instance, we can get it on instance details page.
+
+    I ping instance "pingtest1" from "{{ cloud.master }}" # Check that instance up and running
+    I ssh instance "pingtest1" using password "111"       # Check that we can ssh to instance using password
+    I ssh instance "pingtest1" using key "111"            # Check that we can ssh to instance using key
+
+
+    I execute command "hostname" on instance "pingtest1"    # ssh to instance using key from config and execute command. Will fail if exit status <>0
+    I execute command "hostname" on master node             # ssh to master node using key from config and execute command. Will fail if exit status <>0
+
+

@@ -1,0 +1,139 @@
+Feature: Check security group rules functionality
+
+    Scenario: Setup prerequisites
+        Require setup " login ! image ! network ! project ! ssh_key "
+
+    Scenario: Navigate to Security Groups page
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        When I click project menu item "Security Groups"
+        Then I see page subheader "List of existing security groups"
+
+    Scenario: Create security group 1 for test
+        Given I see page subheader "List of existing security groups"
+        When I click button "Add"
+        Then I see page subheader "Add new security group"
+        When I type "sg-func-test-1" in field "Name"
+        And I type "sg-func-test-1" in field "Description"
+        And I click button "Create"
+        Then I see success notification "Security group sg-func-test-1 created."
+        And I see page subheader "List of existing security groups"
+
+    Scenario: Create security group 2 for test
+        When I click button "Add"
+        When I type "sg-func-test-2" in field "Name"
+        And I type "sg-func-test-2" in field "Description"
+        And I click button "Create"
+        Then I see success notification "Security group sg-func-test-2 created."
+
+
+    Scenario: Spawn instance in security group 1
+        When I click project menu item "Virtual Machines"
+        And I click button "Add"
+        And I type "test-instance-sg-func-1" in field "Name"
+        And I select "{{ image.name }}" in field "Image"
+        And I select "{{ instance.flavor }}" in field "Flavor"
+        And I select "{{ keypair.name }}" in field "keypair"
+        And I select "sg-func-test-1" in field "Security Groups"
+        And I click button "Spawn it"
+        Then I see success notification "Virtual machine spawned."
+        And I see page header "{{ projects.0.name }}: Virtual Machines"
+        When I refresh page until I see "ACTIVE" in line containing "test-instance-sg-func-1"
+
+    Scenario: Find instance test-instance-sg-func-1 IP
+        When I click project menu item "Virtual Machines"
+        And I click "test-instance-sg-func-1" in line containing "test-instance-sg-func-1", row "Name"
+        Then I see "test-instance-sg-func-1" in line "Name"
+        And I see page subheader "Virtual machine details"
+        And I search and remember IP of instance "test-instance-sg-func-1"
+
+
+    Scenario: Spawn instance in security group 2
+        When I click project menu item "Virtual Machines"
+        And I click button "Add"
+        And I type "test-instance-sg-func-2" in field "Name"
+        And I select "{{ image.name }}" in field "Image"
+        And I select "{{ instance.flavor }}" in field "Flavor"
+        And I select "{{ keypair.name }}" in field "keypair"
+        And I select "sg-func-test-2" in field "Security Groups"
+        And I click button "Spawn it"
+        Then I see success notification "Virtual machine spawned."
+        And I see page header "{{ projects.0.name }}: Virtual Machines"
+        When I refresh page until I see "ACTIVE" in line containing "test-instance-sg-func-2"
+
+    Scenario: Find instance test-instance-sg-func-2 IP
+        When I click project menu item "Virtual Machines"
+        And I click "test-instance-sg-func-2" in line containing "test-instance-sg-func-2", row "Name"
+        Then I see "test-instance-sg-func-2" in line "Name"
+        And I see page subheader "Virtual machine details"
+        And I search and remember IP of instance "test-instance-sg-func-2"
+
+    Scenario: Spawn instance in default security group
+        When I click project menu item "Virtual Machines"
+        And I click button "Add"
+        And I type "test-instance-sg-func-def" in field "Name"
+        And I select "{{ image.name }}" in field "Image"
+        And I select "{{ instance.flavor }}" in field "Flavor"
+        And I select "{{ keypair.name }}" in field "keypair"
+        And I select "default" in field "Security Groups"
+        And I click button "Spawn it"
+        Then I see success notification "Virtual machine spawned."
+        And I see page header "{{ projects.0.name }}: Virtual Machines"
+        When I refresh page until I see "ACTIVE" in line containing "test-instance-sg-func-def"
+
+    Scenario: Find instance test-instance-sg-func-def IP
+        When I click project menu item "Virtual Machines"
+        And I click "test-instance-sg-func-def" in line containing "test-instance-sg-func-def", row "Name"
+        Then I see "test-instance-sg-func-def" in line "Name"
+        And I see page subheader "Virtual machine details"
+        And I search and remember IP of instance "test-instance-sg-func-def"
+
+    Scenario: Check spawned instance 1
+        I ping host "test-instance-sg-func-1" from master node
+        I check ssh on host "test-instance-sg-func-1" from master node
+
+    Scenario: Check spawned instance 2
+        I ping host "test-instance-sg-func-2" from master node
+        I check ssh on host "test-instance-sg-func-2" from master node
+
+    Scenario: Check spawned instance 3
+        I ping host "test-instance-sg-func-def" from master node
+        I check ssh on host "test-instance-sg-func-def" from master node
+
+    Scenario: Check i can access instance1 from instance2
+        I ping host "test-instance-sg-func-1" from host "test-instance-sg-func-2"
+        I check ssh on host "test-instance-sg-func-1" from host "test-instance-sg-func-2"
+
+    Scenario: Check i can access instance1 from instance3
+        I ping host "test-instance-sg-func-1" from host "test-instance-sg-func-def"
+        I check ssh on host "test-instance-sg-func-1" from host "test-instance-sg-func-def"
+
+
+    Scenario: Clean1
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        When I click "delete" in line containing "test-instance-sg-func-1", row "Actions"
+        And I see modal dialog "Confirmation request" contains "Sure to delete VM "test-instance-sg-func-1""
+        And I click modal dialog button "Yes, delete"
+        And I wait 20 seconds
+
+    Scenario: Clean2
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        When I click "delete" in line containing "test-instance-sg-func-2", row "Actions"
+        And I see modal dialog "Confirmation request" contains "Sure to delete VM "test-instance-sg-func-2""
+        And I click modal dialog button "Yes, delete"
+        And I wait 20 seconds
+
+
+    Scenario: Clean
+        I click project menu item "Security Groups"
+        Given I see page subheader "List of existing security groups"
+        When I click "delete" in line containing "sg-func-test-1", row "Actions"
+        And I click modal dialog button "Yes, delete"
+
+    Scenario: Clean1
+        When I click "delete" in line containing "sg-func-test-2", row "Actions"
+        And I click modal dialog button "Yes, delete"
+

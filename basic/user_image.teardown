@@ -1,0 +1,9 @@
+Feature: Clean images
+
+    Scenario: Remove image
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        And I click project menu item "Images"
+        When I click "delete" in line containing "{{ image.name }}", row "Actions"
+        And I click modal dialog button "Yes, delete"

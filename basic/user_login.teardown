@@ -1,0 +1,4 @@
+Feature: Logout
+
+    Scenario: Logout
+        I close browser

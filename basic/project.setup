@@ -1,0 +1,27 @@
+Feature: Add project
+
+    Scenario: Navigate to projects page
+
+        Given I open page "/"
+        When I click top menu "Global administration"
+        Then I see page header "Global administration: Virtual machines"
+        When I click project menu item "Projects"
+
+{% for project in projects %}
+    Scenario: Add new project {{ project.name }}
+        When I click project menu item "Projects"
+        And I click button "Add"
+        And I type "{{ project.name }}" in field "Name"
+        And I select "net{{ project.net }} ({{ project.CIDR }}, {{ project.net }})" in field "Network"
+        And I click button "Create"
+{% endfor %}
+
+{% for project in projects %}
+  {% for user in project.users %}
+    Scenario: Add user {{ user }} to project {{ project.name }}
+        When I click project menu item "Users"
+        And I click "{{ user }}" in line containing "{{ user }}", row "Username"
+        And I select "{{ project.name }}" in field "Add Project"
+        And I click button "Add"
+  {% endfor %}
+{% endfor %}

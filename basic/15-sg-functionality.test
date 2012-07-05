@@ -1,0 +1,415 @@
+Feature: Check security group rules functionality.
+         We create 3 security groups and start instance in each SG
+         After that, we need to check that there is no traffic allowed without permissive rule
+         After checking, we permit traffic and check it works
+
+    Scenario: Setup prerequisites
+        Require setup " login ! image ! network ! project ! ssh_key "
+        #Require setup " login "
+
+    Scenario: Navigate to Security Groups of project1 page
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.1.name }}" in line containing "{{ projects.1.name }}", row "Project name"
+        When I click project menu item "Security Groups"
+        Then I see page subheader "List of existing security groups"
+
+    Scenario: Create security group in project1 for test
+        Given I see page subheader "List of existing security groups"
+        When I click button "Add"
+        Then I see page subheader "Add new security group"
+        When I type "sg-func-test-pr1" in field "Name"
+        And I type "sg-func-test-pr1" in field "Description"
+        And I click button "Create"
+        Then I see success notification "Security group sg-func-test-pr1 created."
+        And I see page subheader "List of existing security groups"
+
+        When I click project menu item "Security Groups"
+        And I click "sg-func-test-pr1" in line containing "sg-func-test-pr1", row "Name"
+        And I see page subheader "Security group details"
+
+        When I click button "Add"
+        Then I see page subheader "Add new rule"
+        When I select "TCP" in field "IP Protocol"
+        And I type "22" in field "from_port"
+        And I type "22" in field "to_port"
+        And I type "{{ networks.1.GW }}" in field "cidr"
+        And I click button "Create"
+        Then I see success notification "Security group rule successfully added"
+
+
+    Scenario: Spawn instance in SG of project1
+        When I click project menu item "Virtual Machines"
+        And I click button "Add"
+        And I type "test-instance-sg-func-pr1" in field "Name"
+        And I select "{{ image.name }}" in field "Image"
+        And I select "{{ instance.flavor }}" in field "Flavor"
+        And I select "{{ keypair.name }}" in field "keypair"
+        And I select "sg-func-test-pr1" in field "Security Groups"
+        And I click button "Spawn it"
+        Then I see success notification "Virtual machine spawned."
+        And I see page header "{{ projects.1.name }}: Virtual Machines"
+        When I refresh page until I see "ACTIVE" in line containing "test-instance-sg-func-pr1"
+
+    Scenario: Find instance test-instance-sg-func-pr1 IP
+        When I click project menu item "Virtual Machines"
+        And I click "test-instance-sg-func-pr1" in line containing "test-instance-sg-func-pr1", row "Name"
+        Then I see "test-instance-sg-func-pr1" in line "Name"
+        And I see page subheader "Virtual machine details"
+        And I search and remember IP of instance "test-instance-sg-func-pr1"
+
+    Scenario: Navigate to Security Groups of project0 page
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        When I click project menu item "Security Groups"
+        Then I see page subheader "List of existing security groups"
+
+    Scenario: Create security group 1 for test
+        Given I see page subheader "List of existing security groups"
+        When I click button "Add"
+        Then I see page subheader "Add new security group"
+        When I type "sg-func-test-1" in field "Name"
+        And I type "sg-func-test-1" in field "Description"
+        And I click button "Create"
+        Then I see success notification "Security group sg-func-test-1 created."
+        And I see page subheader "List of existing security groups"
+
+    Scenario: Create security group 2 for test
+        When I click button "Add"
+        When I type "sg-func-test-2" in field "Name"
+        And I type "sg-func-test-2" in field "Description"
+        And I click button "Create"
+        Then I see success notification "Security group sg-func-test-2 created."
+
+        When I click project menu item "Security Groups"
+        And I click "sg-func-test-2" in line containing "sg-func-test-2", row "Name"
+        And I see page subheader "Security group details"
+
+        When I click button "Add"
+        Then I see page subheader "Add new rule"
+        When I select "TCP" in field "IP Protocol"
+        And I type "22" in field "from_port"
+        And I type "22" in field "to_port"
+        And I type "{{ networks.0.GW }}" in field "cidr"
+        And I click button "Create"
+        Then I see success notification "Security group rule successfully added"
+
+
+    Scenario: Spawn instance in security group 1
+        When I click project menu item "Virtual Machines"
+        And I click button "Add"
+        And I type "test-instance-sg-func-1" in field "Name"
+        And I select "{{ image.name }}" in field "Image"
+        And I select "{{ instance.flavor }}" in field "Flavor"
+        And I select "{{ keypair.name }}" in field "keypair"
+        And I select "sg-func-test-1" in field "Security Groups"
+        And I click button "Spawn it"
+        Then I see success notification "Virtual machine spawned."
+        And I see page header "{{ projects.0.name }}: Virtual Machines"
+        When I refresh page until I see "ACTIVE" in line containing "test-instance-sg-func-1"
+
+    Scenario: Find instance test-instance-sg-func-1 IP
+        When I click project menu item "Virtual Machines"
+        And I click "test-instance-sg-func-1" in line containing "test-instance-sg-func-1", row "Name"
+        Then I see "test-instance-sg-func-1" in line "Name"
+        And I see page subheader "Virtual machine details"
+        And I search and remember IP of instance "test-instance-sg-func-1"
+
+
+    Scenario: Spawn instance in security group 2
+        When I click project menu item "Virtual Machines"
+        And I click button "Add"
+        And I type "test-instance-sg-func-2" in field "Name"
+        And I select "{{ image.name }}" in field "Image"
+        And I select "{{ instance.flavor }}" in field "Flavor"
+        And I select "{{ keypair.name }}" in field "keypair"
+        And I select "sg-func-test-2" in field "Security Groups"
+        And I click button "Spawn it"
+        Then I see success notification "Virtual machine spawned."
+        And I see page header "{{ projects.0.name }}: Virtual Machines"
+        When I refresh page until I see "ACTIVE" in line containing "test-instance-sg-func-2"
+
+    Scenario: Find instance test-instance-sg-func-2 IP
+        When I click project menu item "Virtual Machines"
+        And I click "test-instance-sg-func-2" in line containing "test-instance-sg-func-2", row "Name"
+        Then I see "test-instance-sg-func-2" in line "Name"
+        And I see page subheader "Virtual machine details"
+        And I search and remember IP of instance "test-instance-sg-func-2"
+
+
+    Scenario: Allow ssh for test script
+        When I click project menu item "Security Groups"
+        And I click "default" in line containing "default", row "Name"
+        And I see page subheader "Security group details"
+
+        When I click button "Add"
+        Then I see page subheader "Add new rule"
+        When I select "TCP" in field "IP Protocol"
+        And I type "22" in field "from_port"
+        And I type "22" in field "to_port"
+        And I type "{{ networks.0.GW }}" in field "cidr"
+        And I click button "Create"
+        Then I see success notification "Security group rule successfully added"
+
+
+    Scenario: Spawn instance in default security group
+        When I click project menu item "Virtual Machines"
+        And I click button "Add"
+        And I type "test-instance-sg-func-def" in field "Name"
+        And I select "{{ image.name }}" in field "Image"
+        And I select "{{ instance.flavor }}" in field "Flavor"
+        And I select "{{ keypair.name }}" in field "keypair"
+        And I select "default" in field "Security Groups"
+        And I click button "Spawn it"
+        Then I see success notification "Virtual machine spawned."
+        And I see page header "{{ projects.0.name }}: Virtual Machines"
+        When I refresh page until I see "ACTIVE" in line containing "test-instance-sg-func-def"
+
+    Scenario: Find instance test-instance-sg-func-def IP
+        When I click project menu item "Virtual Machines"
+        And I click "test-instance-sg-func-def" in line containing "test-instance-sg-func-def", row "Name"
+        Then I see "test-instance-sg-func-def" in line "Name"
+        And I see page subheader "Virtual machine details"
+        And I search and remember IP of instance "test-instance-sg-func-def"
+
+
+# Check there is no traffic allowed
+    Scenario: Check spawned instance in SG1 is NOT accessible without rule
+        I cannot ping host "test-instance-sg-func-1" from master node
+
+    Scenario: Check spawned instance in SG2 is NOT accessible without rule
+        I cannot ping host "test-instance-sg-func-2" from master node
+
+    Scenario: Check spawned instance in default SG is NOT accessible without rule
+        I cannot ping host "test-instance-sg-func-def" from master node
+
+    Scenario: Check spawned instance in PR1 is NOT accessible without rule
+        I cannot ping host "test-instance-sg-func-pr1" from master node
+
+    Scenario: Check access to SG1 from SG2 is NOT working without rule
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-2"
+
+    Scenario: Check access to SG1 from default SG is NOT working without rule
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-def"
+
+    Scenario: Check access to SG1 from PR1 is NOT working without rule
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-pr1"
+
+# Check dport rule
+    Scenario: Add rules to allow TCP 22 and icmp to SG1
+        When I click project menu item "Security Groups"
+        And I click "sg-func-test-1" in line containing "sg-func-test-1", row "Name"
+        And I see page subheader "Security group details"
+
+        When I click button "Add"
+        Then I see page subheader "Add new rule"
+        When I select "TCP" in field "IP Protocol"
+        And I type "22" in field "from_port"
+        And I type "22" in field "to_port"
+        And I click button "Create"
+        Then I see success notification "Security group rule successfully added"
+
+        When I click button "Add"
+        Then I see page subheader "Add new rule"
+        When I select "ICMP" in field "IP Protocol"
+        And I type "-1" in field "from_port"
+        And I type "-1" in field "to_port"
+        And I click button "Create"
+        Then I see success notification "Security group rule successfully added"
+
+    Scenario: Check now i can ping instance in SG1
+        I ping host "test-instance-sg-func-1" from master node
+        I check ssh on host "test-instance-sg-func-1" from master node
+
+    Scenario: Check now i can access instance in SG1 from SG2
+        I ping host "test-instance-sg-func-1" from host "test-instance-sg-func-2"
+        I check ssh on host "test-instance-sg-func-1" from host "test-instance-sg-func-2"
+
+    Scenario: Check now i can access instance in SG1 from PR1
+        I ping host "test-instance-sg-func-1" from host "test-instance-sg-func-pr1"
+        I check ssh on host "test-instance-sg-func-1" from host "test-instance-sg-func-pr1"
+
+    Scenario: Check now i can access instance in SG1 from default SG
+        I ping host "test-instance-sg-func-1" from host "test-instance-sg-func-def"
+        I check ssh on host "test-instance-sg-func-1" from host "test-instance-sg-func-def"
+
+    Scenario: Delete rules
+        When I click project menu item "Security Groups"
+        And I click "sg-func-test-1" in line containing "sg-func-test-1", row "Name"
+        Then I see page subheader "Security group details"
+
+        When I click "delete" in line containing "22", row "Actions"
+        And I click modal dialog button "Yes, delete"
+
+        When I click "delete" in line containing "-1", row "Actions"
+        And I click modal dialog button "Yes, delete"
+
+        Then I see success notification "Security group rule successfully deleted"
+        And I see page subheader "Security group details"
+
+    Scenario: Check now i can NOT ping instance in SG1
+        I cannot ping host "test-instance-sg-func-1" from master node
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-2"
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-def"
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-pr1"
+
+
+# Check source group rule
+    Scenario: Add Source Group rule to allow traffic between SG1 and SG2 groups
+        When I click project menu item "Security Groups"
+        And I click "sg-func-test-1" in line containing "sg-func-test-1", row "Name"
+        And I see page subheader "Security group details"
+
+        When I click button "Add"
+        Then I see page subheader "Add new rule"
+        When I select "TCP" in field "IP Protocol"
+        And I type "22" in field "from_port"
+        And I type "22" in field "to_port"
+        And I select "sg-func-test-2" in field "group_id"
+        And I click button "Create"
+        Then I see success notification "Security group rule successfully added"
+
+        When I click button "Add"
+        Then I see page subheader "Add new rule"
+        When I select "ICMP" in field "IP Protocol"
+        And I type "-1" in field "from_port"
+        And I type "-1" in field "to_port"
+        And I select "sg-func-test-2" in field "group_id"
+        And I click button "Create"
+        Then I see success notification "Security group rule successfully added"
+
+    Scenario: Check now i can ping instance in SG1 from SG2
+        I ping host "test-instance-sg-func-1" from host "test-instance-sg-func-2"
+
+    Scenario: Check i cannot ping instance in SG1 from anywhere else
+        I cannot ping host "test-instance-sg-func-1" from master node
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-def"
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-pr1"
+
+    Scenario: Delete rules
+        When I click project menu item "Security Groups"
+        And I click "sg-func-test-1" in line containing "sg-func-test-1", row "Name"
+        Then I see page subheader "Security group details"
+
+        When I click "delete" in line containing "22", row "Actions"
+        And I click modal dialog button "Yes, delete"
+
+        When I click "delete" in line containing "-1", row "Actions"
+        And I click modal dialog button "Yes, delete"
+
+        Then I see success notification "Security group rule successfully deleted"
+        And I see page subheader "Security group details"
+
+    Scenario: Check can NOT ping instance in SG1
+        I cannot ping host "test-instance-sg-func-1" from master node
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-def"
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-2"
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-pr1"
+
+
+# Check host rule
+    Scenario: Add rules to allow traffic to SG1 from PR1
+        When I click project menu item "Security Groups"
+        And I click "sg-func-test-1" in line containing "sg-func-test-1", row "Name"
+        And I see page subheader "Security group details"
+
+        When I click button "Add"
+        Then I see page subheader "Add new rule"
+        When I select "TCP" in field "IP Protocol"
+        And I type "22" in field "from_port"
+        And I type "22" in field "to_port"
+        And I type "{{ projects.1.CIDR }}" in field "cidr"
+        And I click button "Create"
+        Then I see success notification "Security group rule successfully added"
+
+        When I click button "Add"
+        Then I see page subheader "Add new rule"
+        When I select "ICMP" in field "IP Protocol"
+        And I type "-1" in field "from_port"
+        And I type "-1" in field "to_port"
+        And I type "{{ projects.1.CIDR }}" in field "cidr"
+        And I click button "Create"
+        Then I see success notification "Security group rule successfully added"
+
+    Scenario: Check now i can ping instance in SG1 from PR1
+        I ping host "test-instance-sg-func-1" from host "test-instance-sg-func-pr1"
+        I check ssh on host "test-instance-sg-func-1" from host "test-instance-sg-func-pr1"
+
+    Scenario: Check i cannot ping instance in SG1 from anywhere else
+        I cannot ping host "test-instance-sg-func-1" from master node
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-def"
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-2"
+
+    Scenario: Delete rules
+        When I click project menu item "Security Groups"
+        And I click "sg-func-test-1" in line containing "sg-func-test-1", row "Name"
+        Then I see page subheader "Security group details"
+
+        When I click "delete" in line containing "22", row "Actions"
+        And I click modal dialog button "Yes, delete"
+
+        When I click "delete" in line containing "-1", row "Actions"
+        And I click modal dialog button "Yes, delete"
+
+        Then I see success notification "Security group rule successfully deleted"
+        And I see page subheader "Security group details"
+
+    Scenario: Check now i can NOT ping instance in SG1
+        I cannot ping host "test-instance-sg-func-1" from master node
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-2"
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-def"
+        I cannot ping host "test-instance-sg-func-1" from host "test-instance-sg-func-pr1"
+
+
+# Clean
+    Scenario: Clean instance in SG1
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        When I click "delete" in line containing "test-instance-sg-func-1", row "Actions"
+        And I see modal dialog "Confirmation request" contains "Sure to delete VM "test-instance-sg-func-1""
+        And I click modal dialog button "Yes, delete"
+
+    Scenario: Clean instance in SG2
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        When I click "delete" in line containing "test-instance-sg-func-2", row "Actions"
+        And I see modal dialog "Confirmation request" contains "Sure to delete VM "test-instance-sg-func-2""
+        And I click modal dialog button "Yes, delete"
+
+    Scenario: Clean instance default SG
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        When I click "delete" in line containing "test-instance-sg-func-def", row "Actions"
+        And I see modal dialog "Confirmation request" contains "Sure to delete VM "test-instance-sg-func-def""
+        And I click modal dialog button "Yes, delete"
+
+    Scenario: Clean SG1
+        I click project menu item "Security Groups"
+        Given I see page subheader "List of existing security groups"
+        When I click "delete" in line containing "sg-func-test-1", row "Actions"
+        And I click modal dialog button "Yes, delete"
+
+    Scenario: Clean SG2
+        When I click "delete" in line containing "sg-func-test-2", row "Actions"
+        And I click modal dialog button "Yes, delete"
+
+
+#PR1
+    Scenario: Navigate to Security Groups of project1 page
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.1.name }}" in line containing "{{ projects.1.name }}", row "Project name"
+
+    Scenario: Clean pr1 SG
+        I click project menu item "Security Groups"
+        Given I see page subheader "List of existing security groups"
+        When I click "delete" in line containing "sg-func-test-pr1", row "Actions"
+        And I click modal dialog button "Yes, delete"
+
+    Scenario: Clean instance pr1
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        When I click "delete" in line containing "test-instance-sg-func-pr1", row "Actions"
+        And I see modal dialog "Confirmation request" contains "Sure to delete VM "test-instance-sg-func-pr1""
+        And I click modal dialog button "Yes, delete"

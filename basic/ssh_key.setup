@@ -1,0 +1,13 @@
+Feature: Create ssh keypair
+
+    Scenario: Navigate to SSH Keys page
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        And I click project menu item "SSH Keys"
+
+    Scenario: Create ssh keypair
+        When I click button "Add"
+        And I type "{{ keypair.name }}" in field "name"
+        And I type "{{ keypair.public }}" in field "public_key"
+        And I click button "Add Key"

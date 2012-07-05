@@ -1,0 +1,14 @@
+Feature: Login as admin
+
+    Scenario: Open login page
+        I open browser
+        When I open page "/login/"
+        Then I see page title "Altai Private Cloud"
+
+    Scenario: Try to login
+        Given I see page title "Altai Private Cloud"
+        When I type "{{sys.login}}" in field "email"
+        And I type "{{sys.password}}" in field "password"
+        And I click button "Sign in"
+        Then I see success notification "You were logged in successfully."
+        And I see page header "Altai Private Cloud"

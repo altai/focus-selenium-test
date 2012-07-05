@@ -1,0 +1,64 @@
+Browser:
+
+1) I open browser
+
+2) I close browser
+
+3) I open page "%s"                
+example: I open page "/login"
+
+Forms:
+
+4) I type "%s" in field "%s"       
+example: I type "spugachev@griddynamics.com" in field "Email"
+hint: You can copy paste input label near the field and put it as a field selector
+ 
+5) I click button "%s"
+example: I click button "Sign in"
+    
+    
+6) I click top menu "%s", sub-menu "%s"
+example: I click top menu "Select project", sub-menu "testproject"
+
+I click top menu "%s"
+
+7) I see project menu item "%s" active 
+example: I see project menu item "Virtual Machines" active
+
+7.1) I click page menu item "%s"
+
+I click "(.*)" in line containing "(.*)", row "(.*)"
+
+I click modal dialog button "(.*)"
+
+I cannot click form button "Add"
+
+8) I select "%s" in field "%s"
+example: I select "m1.small" in field "Image"
+hint: You can copy paste form label near the field and put it as a field selector
+
+I see:
+
+9) I see success notification "%s"
+example: I see success notification "You were logged in successfully."
+    
+10) I see error tip "%s"
+example: I see error tip "This field is required."
+
+11) I see table:
+example: 
+I see table:
+    | Key Name | Fingerprint | Public_key | Actions |
+    
+12) I receive file "%s"
+
+I see page menu item "(.*)" active
+I see project menu item "(.*)" active
+
+I see modal dialog "Public Key for {{keypair.name}}-uploaded" contains "{{ keypair.public }}"
+
+I see "{{ network.CIDR }}" in line "CIDR"
+
+I wait 5 seconds
+
+I open invitation email as "asdf@asdf.asf", "pswd"

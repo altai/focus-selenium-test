@@ -1,0 +1,150 @@
+Feature: Check addition of instance
+
+    Scenario: Setup prerequisites
+        Require setup " login ! image ! network ! project"
+
+    Scenario: Navigate to instance page
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        I see page title "Altai Private Cloud"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        And I click project menu item "Virtual Machines"
+        Then I see page header "{{ projects.0.name }}: Virtual Machines"
+        And I see page subheader "List of virtual machines"
+        And I see project menu item "Virtual Machines" active
+        And I remember table:
+            | Name | Status | User | Actions |
+
+    Scenario: Fill the form to add new instance
+        Given I see page header "{{ projects.0.name  }}: Virtual Machines"
+        When I click project menu item "Virtual Machines"
+        And I click button "Add"
+        And I select "{{ image.name }}" in field "Image"
+        And I select "{{ instance.flavor }}" in field "Flavor"
+        And I type "test-instance-to-delete" in field "Name"
+        And I click button "Spawn it"
+        Then I see success notification "Virtual machine spawned."
+        I see page header "{{ projects.0.name }}: Virtual Machines"
+        And I see in table:
+            | Name | Status | User | Actions |
+            | test-instance-to-delete | BUILD | not_empty | delete reboot reset         |
+        When I refresh page until I see "ACTIVE" in line containing "test-instance-to-delete"
+        And I click project menu item "Virtual Machines"
+        Then I see in table:
+            | Name | Status | User | Actions |
+            | test-instance-to-delete | ACTIVE | not_empty | delete reboot reset VNC log |
+
+    Scenario: Check instance spawning form
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        When I click button "Add"
+        Then I see page subheader "Spawn new virtual machine"
+        And I click button "Spawn it"
+        Then I see error tip "This field is required"
+
+        When I select "{{ image.name }}" in field "Image"
+        And I select "{{ instance.flavor }}" in field "Flavor"
+        And I type "test-instance-to-delete2" in field "Name"
+        And I type "{{ instance.password }}" in field "Password"
+        Then I see error tip "This field is required"
+
+        When I type "{{ instance.password }}" in field "Password"
+        And I type "{{ instance.confirm_password }}" in field "Confirm Password"
+        And I select "{{ keypair.name }}" in field "Key Pair"
+        And I select "default" in field "Security Groups"
+        And I click button "Spawn it"
+        Then I see success notification "Virtual machine spawned."
+        When I refresh page until I see "ACTIVE" in line containing "test-instance-to-delete2"
+        And I click project menu item "Virtual Machines"
+        And I see in table:
+            | Name | Status | User | Actions |
+            | test-instance-to-delete | ACTIVE | not_empty | delete reboot reset VNC log |
+            | test-instance-to-delete2 | ACTIVE | not_empty | delete reboot reset VNC log |
+
+    Scenario: Check instance details
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        When I click "test-instance-to-delete" in line containing "test-instance-to-delete", row "Name"
+        I see "test-instance-to-delete" in line "Name"
+
+    Scenario: Check reboot function
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        Given I see page header "{{ projects.0.name }}: Virtual Machines"
+        When I click project menu item "Virtual Machines"
+        When I click "reboot" in line containing "test-instance-to-delete", row "Actions"
+        Then I see modal dialog "Confirmation request" contains "Sure to reboot VM "test-instance-to-delete""
+        When I click modal dialog button "Yes, reboot"
+        And I see in table:
+            | Name | Status | User | Actions |
+            | test-instance-to-delete | REBOOT | not_empty | delete reboot reset         |
+            | test-instance-to-delete2 | ACTIVE | not_empty | delete reboot reset VNC log |
+
+    Scenario: Check reset function
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        When I click "reset" in line containing "test-instance-to-delete2", row "Actions"
+        Then I see modal dialog "Confirmation request" contains "Sure to reset VM "test-instance-to-delete2""
+        When I click modal dialog button "Yes, reset"
+        And I see in table:
+            | Name | Status | User | Actions |
+            | test-instance-to-delete | REBOOT | not_empty | delete reboot reset         |
+            | test-instance-to-delete2 | HARD_REBOOT | not_empty | delete reboot reset         |
+        When I refresh page until I see "ACTIVE" in line containing "test-instance-to-delete"
+        When I refresh page until I see "ACTIVE" in line containing "test-instance-to-delete2"
+        And I click project menu item "Virtual Machines"
+        Then I see in table:
+            | Name | Status | User | Actions |
+            | test-instance-to-delete | ACTIVE | not_empty | delete reboot reset VNC log |
+            | test-instance-to-delete2 | ACTIVE | not_empty | delete reboot reset VNC log |
+
+    Scenario: Find 1st instance IP
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        When I click "test-instance-to-delete" in line containing "test-instance-to-delete", row "Name"
+        Then I see "test-instance-to-delete" in line "Name"
+        And I see page subheader "Virtual machine details"
+        And I search and remember IP of instance "test-instance-to-delete"
+
+    Scenario: Check instance up
+        I wait 320 seconds
+        I ping host "test-instance-to-delete" from master node
+
+    Scenario: Find 2nd instance IP
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        When I click "test-instance-to-delete2" in line containing "test-instance-to-delete2", row "Name"
+        Then I see "test-instance-to-delete2" in line "Name"
+        And I see page subheader "Virtual machine details"
+        And I search and remember IP of instance "test-instance-to-delete2"
+
+    Scenario: Check instance up
+        I ping host "test-instance-to-delete2" from master node
+
+    Scenario: Check delete function
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        And I click "delete" in line containing "test-instance-to-delete2", row "Actions"
+        Then I see modal dialog "Confirmation request" contains "Sure to delete VM "test-instance-to-delete2""
+        When I click modal dialog button "Yes, delete"
+        Then I see success notification "Delete operation requested for VM."
+        And I see in table:
+            | Name | Status | User | Actions |
+            | test-instance-to-delete | not_empty | not_empty | delete reboot reset VNC log |
+            | [DELETE OPERATION REQUESTED] test-instance-to-delete2 | ACTIVE | not_empty | empty |
+        When I wait 20 seconds
+        And I click project menu item "Virtual Machines"
+        Then I see in table:
+            | Name | Status | User | Actions |
+            | test-instance-to-delete | ACTIVE | not_empty | delete reboot reset VNC log |
+
+    Scenario: Clean
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        When I click "delete" in line containing "test-instance-to-delete", row "Actions"
+        And I see modal dialog "Confirmation request" contains "Sure to delete VM "test-instance-to-delete""
+        And I click modal dialog button "Yes, delete"
+        And I wait 20 seconds
+        And I click project menu item "Virtual Machines"
+        Then I see in table:
+            | Name | Status | User | Actions |

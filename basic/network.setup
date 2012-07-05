@@ -1,0 +1,17 @@
+Feature: Add networks
+
+    Scenario: Navigate to Network administration page
+        Given I open page "/"
+        When I click top menu "Global administration"
+        When I click project menu item "Networks"
+        Then I see project menu item "Networks" active
+
+
+  {% for network in networks %}
+    Scenario: Create test network
+        I click project menu item "Networks"
+        When I click button "Add"
+        And I type "{{ network.CIDR }}" in field "CIDR"
+        And I type "{{ network.VLAN }}" in field "VLAN"
+        And I click button "Create"
+  {% endfor %}

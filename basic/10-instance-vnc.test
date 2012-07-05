@@ -1,0 +1,19 @@
+Feature: Check VNC feature
+
+    Scenario: Setup prerequisites
+        Require setup " login ! image ! network ! project ! instance "
+
+    Scenario: Navigate to instance page
+
+       Given I open page "/"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+
+    Scenario: Check VNC console
+        And I click "VNC" in line containing "{{ instance.name }}", row "Actions"
+        I wait 20 seconds
+        Then I find window with title "noVNC"
+        And I see text "^[noVNC ready: |Connected ]" in element with css "#VNC_status"
+        I close page
+        Then I find window with title "Altai Private Cloud"
+        Then I see page header "{{ projects.0.name }}: Virtual Machines"

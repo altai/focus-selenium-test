@@ -1,0 +1,125 @@
+Feature: SSH keys test
+
+
+    Scenario: Setup prerequisites
+        Require setup " login ! image ! network ! project "
+
+    Scenario: Check SSH administration page
+        Given I open page "/"
+        And I see page title "Altai Private Cloud"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        And I see project menu item "Virtual Machines" active
+        When I click project menu item "SSH Keys"
+        Then I see page header "{{ projects.0.name }}: ssh keys"
+        And I see page subheader "List of SSH keys"
+        And I see project menu item "SSH Keys" active
+        And I remember table:
+            | Key Name | Fingerprint | Public_key | Actions |
+
+    Scenario: Fill the form to add new auto-generated key
+        I click project menu item "SSH Keys"
+        Given I see page subheader "List of SSH keys"
+        When I click button "Add"
+        And I type "test-suite-key-generated" in field "Name"
+        And I click button "Add Key"
+        # TODO: Then I see success notification "Keypair was successfully created"
+        # TODO: And I see page header "{{ projects.0.name }}: ssh keys"
+
+        When I click project menu item "SSH Keys"
+        And I see page header "{{ projects.0.name }}: ssh keys"
+        And I see in table:
+            | Key Name                    | Fingerprint | Public_key | Actions |
+            | test-suite-key-generated    | not_empty   | show       | delete  |
+
+    Scenario: Fill the form to add my key
+        I click project menu item "SSH Keys"
+        Given I see page subheader "List of SSH keys"
+        When I click button "Add"
+        And I type "test-suite-key-uploaded" in field "Name"
+        And I type "{{keypair.public}}" in field "Public Key"
+        And I click button "Add Key"
+        # TODO: Then I see success notification "Keypair was successfully created"
+        # TODO: And I see page header "{{ projects.0.name }}: ssh keys"
+
+        I click project menu item "SSH Keys"
+        And I see in table:
+            | Key Name                 | Fingerprint | Public key | Actions |
+            | test-suite-key-generated | not_empty   | show       | delete  |
+            | test-suite-key-uploaded  | not_empty   | show       | delete  |
+
+    Scenario: Check that form handles errors
+        I click project menu item "SSH Keys"
+        Given I see page subheader "List of SSH keys"
+        And I click button "Add"
+        Then I see page subheader "Add new SSH key"
+        When I click button "Add Key"
+        Then I see error tip "This field is required."
+        And I see page header "{{ projects.0.name }}: ssh keys"
+        # TODO I click button "Cancel"
+        When I click project menu item "SSH Keys"
+
+
+    Scenario: Check that ssh keys functions works
+        I click project menu item "SSH Keys"
+        Given I see page subheader "List of SSH keys"
+        And I see in table:
+            | Key Name                 | Fingerprint | Public_key | Actions |
+            | test-suite-key-generated | not_empty   | show       |  delete |
+            | test-suite-key-uploaded  | not_empty   | show       |  delete |
+        When I click "show" in line containing "test-suite-key-uploaded", row "Public_key"
+        Then I see modal dialog "Public Key for test-suite-key-uploaded" contains "{{ keypair.public }}"
+        When I click modal dialog button "OK"
+        Then I see page header "{{ projects.0.name }}: ssh keys"
+
+    Scenario: Spawn instance with keys
+        When I click project menu item "Virtual Machines"
+        And I click button "Add"
+        And I select "{{ image.name }}" in field "Image"
+        And I select "{{ instance.flavor }}" in field "Flavor"
+        And I select "test-suite-key-uploaded" in field "Key Pair"
+        And I type "test-instance-ssh-key-uploaded" in field "Name"
+        And I click button "Spawn it"
+        Then I see success notification "Virtual machine spawned."
+        And I see page header "{{ projects.0.name }}: Virtual Machines"
+        When I refresh page until I see "ACTIVE" in line containing "test-instance-ssh-key-uploaded"
+
+    Scenario: Find instance test-instance-ssh-key-uploaded IP
+        When I click project menu item "Virtual Machines"
+        And I click "test-instance-ssh-key-uploaded" in line containing "test-instance-ssh-key-uploaded", row "Name"
+        Then I see "test-instance-ssh-key-uploaded" in line "Name"
+        And I see page subheader "Virtual machine details"
+        And I search and remember IP of instance "test-instance-ssh-key-uploaded"
+
+    Scenario: Check we can ssh to spawned instance
+        I wait 320 seconds
+        I check ssh on host "test-instance-ssh-key-uploaded" from master node
+
+    Scenario: Clean
+        When I click project menu item "Virtual Machines"
+        Then I see page subheader "List of virtual machines"
+        When I click "delete" in line containing "test-instance-ssh-key-uploaded", row "Actions"
+        And I see modal dialog "Confirmation request" contains "Sure to delete VM "test-instance-ssh-key-uploaded""
+        And I click modal dialog button "Yes, delete"
+        And I wait 20 seconds
+
+    Scenario: Remove SSH key
+        I click project menu item "SSH Keys"
+        Given I see page subheader "List of SSH keys"
+        And I see in table:
+            | Key Name                 | Fingerprint | Public_key | Actions |
+            | test-suite-key-generated | not_empty   | show       | delete  |
+            | test-suite-key-uploaded  | not_empty   | show       | delete  |
+        When I click "delete" in line containing "test-suite-key-generated", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        Then I see in table:
+            | Key Name                 | Fingerprint | Public_key | Actions |
+            | test-suite-key-uploaded  | not_empty   | show       | delete  |
+
+    Scenario: Clean
+        I click project menu item "SSH Keys"
+        Given I see page subheader "List of SSH keys"
+        When I click "delete" in line containing "test-suite-key-uploaded", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        Then I see in table:
+            | Key Name                 | Fingerprint | Public_key | Actions |

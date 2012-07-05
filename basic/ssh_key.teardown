@@ -1,0 +1,11 @@
+Feature: Remove ssh keypairs
+
+    Scenario: Navigate to SSH Keys page
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        When I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        When I click project menu item "SSH Keys"
+
+    Scenario: Remove keypair
+        When I click "delete" in line containing "{{ keypair.name }}", row "Actions"
+        And I click modal dialog button "Yes, delete"

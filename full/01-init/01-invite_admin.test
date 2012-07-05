@@ -1,0 +1,40 @@
+Feature: Check user invitation process. Invite admin user
+
+    Scenario: Open login page
+        I open browser
+        When I open page "/login/"
+        Then I see page title "Altai Private Cloud"
+
+    Scenario: Login as sys admin and invite tests admin
+        Given I see page title "Altai Private Cloud"
+        When I type "{{sys.login}}" in field "email"
+        And I type "{{sys.password}}" in field "password"
+        And I click button "Sign in"
+        Then I see page header "Altai Private Cloud"
+
+
+    Scenario: Send invitation
+        Given I open page "/"
+        I click top menu "Invite"
+        I type "{{ admin.login }}" in field "Email"
+        I select "{{ admin.role }}" in field "Role"
+        I click button "Invite"
+        I see info notification "Invitation sent successfully"
+        I click top menu "Logout"
+        I see success notification "You were logged out"
+
+    Scenario: Register via invitation link
+        I wait 20 seconds
+        When I open invitation email as "{{ admin.login }}", "{{ admin.password }}"
+        I type "{{ admin.password }}" in field "Password"
+        I click button "Register"
+        I see success notification "You were logged out"
+        When I type "{{ admin.login }}" in field "email"
+        And I type "{{ admin.password }}" in field "password"
+        And I click button "Sign in"
+        #Then I see page title "Altai Private Cloud"
+        And I see success notification "You were logged in successfully."
+        I click top menu "Global administration"
+
+    Scenario: Logout
+        I close browser

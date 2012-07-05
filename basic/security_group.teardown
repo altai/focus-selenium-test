@@ -1,0 +1,17 @@
+Feature: Remove security groups
+
+    Scenario: Navigate to Security Groups page
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        When I click project menu item "Security Groups"
+        Then I see page subheader "List of existing security groups"
+
+
+{% for sg in security_groups %}
+    Scenario: Remove security group {{sg.name}}
+        Given I see page subheader "List of existing security groups"
+        When I click "delete" in line containing " {{sg.name}} ", row "Actions"
+        And I click modal dialog button "Yes, delete"
+{% endfor %}
+

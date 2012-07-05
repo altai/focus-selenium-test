@@ -1,0 +1,59 @@
+Feature: Light test. We creating all needed to spawn instance and spawn it.
+
+    Scenario: Setup prerequisites
+        Require setup " login ! image ! network ! project ! ssh_key ! invite "
+
+    Scenario: Navigate to instances page
+        Given I open page "/"
+        And I see page title "Altai Private Cloud"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        Then I see page header "{{projects.0.name}}: Virtual Machines"
+        And I see project menu item "Virtual Machines" active
+        And I remember table:
+            | Name | Status | User | Actions |
+
+    Scenario: Fill the form to spawn new instance
+        #TODO: Given I see page header "{{projects.0.name}} administration"
+        When I click button "Add"
+        Then I see page header "{{projects.0.name}}: Virtual Machines"
+        Then I see page subheader "Spawn new virtual machine"
+        When I select "{{ instance.image }}" in field "Image"
+        And I select "{{ instance.flavor }}" in field "Flavor"
+        And I type "{{ instance.name }}" in field "Name"
+        And I type "{{ instance.password }}" in field "Password"
+        And I type "{{ instance.confirm_password }}" in field "Confirm Password"
+        And I select "{{ keypair.name }}" in field "Key Pair"
+        And I click button "Spawn it"
+        Then I see success notification "Virtual machine spawned."
+        #TODO And I see page title "{{projects.0.name}} administration"
+        And I see project menu item "Virtual Machines" active
+        And I see in table:
+            | Name                | Status | User      | Actions   |
+            | {{ instance.name }} | BUILD  | not_empty | not_empty |
+
+
+    Scenario: Check instance spawned successfully
+        #TODO Given I see page title "{{projects.0.name}} administration"
+        And I see project menu item "Virtual Machines" active
+        When I wait 120 seconds
+        And I click project menu item "Virtual Machines"
+        #TODO Then I see page title "{{projects.0.name}} administration"
+        And I see in table:
+            | Name                | Status | User      | Actions   |
+            | {{ instance.name }} | ACTIVE | not_empty | not_empty |
+
+
+    Scenario: Stop instance
+        #TODO Given I see page title "{{projects.0.name}} administration"
+        When I click "delete" in line containing "{{ instance.name }}", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        Then I see in table:
+            | Name                                           | Status  | User      | Actions |
+            |[DELETE OPERATION REQUESTED] {{ instance.name }}| ACTIVE  | not_empty | empty   |
+
+        When I wait 20 seconds
+        And I click project menu item "Virtual Machines"
+        Then I see in table:
+            | Name                | Status | User | Actions |
+

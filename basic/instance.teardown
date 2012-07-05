@@ -1,0 +1,17 @@
+Feature: Remove instance
+
+    
+    Scenario: Navigate to instance page
+
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        And I click project menu item "Virtual Machines"
+    
+    
+    Scenario: Remove instance
+        When I click "delete" in line containing "{{ instance.name }}", row "Actions"
+        And I see modal dialog "Confirmation request" contains "Sure to delete VM "{{ instance.name }}""
+        And I click modal dialog button "Yes, delete"
+        And I wait 10 seconds
+        

@@ -1,0 +1,85 @@
+Feature: Test invitation domain feature
+
+    Scenario: Setup prerequisites
+        Require setup " login "
+
+    Scenario: Check corresponding page is available
+        Given I open page "/"
+        When I click top menu "Global administration"
+        And I click project menu item "Invitation Domains"
+        Then I see project menu item "Invitation Domains" active
+        And I see page header "Global administration: Invitation domains"
+        And I see page subheader "Invitation domains list"
+        And I remember table:
+                | Email domain | Actions |
+
+
+    Scenario: Check basic form functionality
+        Given I see page subheader "Invitation domains list"
+        When I click button "Add"
+        And I type "gmail.com" in field "email mask"
+        And I click button "Create"
+        Then I see success notification "Email mask created."
+        And I see page header "Global administration: Invitation domains"
+        And I see page subheader "Invitation domains list"
+        And I see in table:
+                | Email domain     | Actions |
+                | gmail.com        | delete |
+
+
+    Scenario: Check form works correctly
+        I click project menu item "Invitation Domains"
+        Given I see page subheader "Invitation domains list"
+
+        When I click button "Add"
+        Then I see page subheader "Add new email domain"
+        When I click button "Create"
+        Then I see error tip "This field is required"
+
+# TODO
+#        When I type "testdomain" in field "email mask"
+#        And I click button "Create"
+#        Then I see error tip "Incorrect domain name"
+
+#        When I type "test@testdomain.com" in field "email mask"
+#        And I click button "Create"
+#        Then I see error tip "Incorrect domain name"
+
+#        When I type "testdomain" in field "email mask"
+#        And I click button "Create"
+#        Then I see error tip "Incorrect domain name"
+
+        When I type "testdomain.test" in field "email mask"
+        And I click button "Create"
+        Then I see success notification "Email mask created."
+        And I see page subheader "Invitation domains list"
+        And I see in table:
+                | Email domain     | Actions |
+                | gmail.com        | delete |
+                | testdomain.test  | delete |
+
+    Scenario: Check deletion
+        I click project menu item "Invitation Domains"
+        Given I see page subheader "Invitation domains list"
+        And I see in table:
+                | Email domain     | Actions |
+                | gmail.com        | delete |
+                | testdomain.test  | delete |
+
+        When I click "delete" in line containing "testdomain.test", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        Then I see success notification "Email mask removed."
+        And I see page header "Global administration: Invitation domains"
+        And I see in table:
+                | Email domain     | Actions |
+                | gmail.com        | delete |
+
+    Scenario: Clean
+        I click project menu item "Invitation Domains"
+        Given I see page subheader "Invitation domains list"
+        When I click "delete" in line containing "gmail.com", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        Then I see success notification "Email mask removed."
+        #TODO Then I see page title "Global administration: invitation domains"
+        And I see in table:
+                | Email domain     | Actions |

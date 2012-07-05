@@ -1,0 +1,9 @@
+Feature: Instance cleaning
+
+    Scenario: Remove instance
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        And I click project menu item "Virtual Machines"
+        And I click "delete" in line containing "{{ instance.name }}", row "Actions"
+        When I click modal dialog button "Yes, delete"

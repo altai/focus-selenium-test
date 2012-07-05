@@ -1,0 +1,68 @@
+Feature: Network usage workflow
+
+    Scenario: Setup prerequisites
+        Require setup " login "
+        
+    Scenario: Check Network administration page
+        Given I open page "/"
+        And I see page title "Altai Private Cloud"
+        When I click top menu "Global administration"
+        Then I see page header "Global administration: Virtual Machines"
+        And I see project menu item "Virtual machines" active
+        When I click project menu item "Networks"
+        Then I see page header "Global administration: Networks"
+        Then I see project menu item "Networks" active
+        I remember table:
+            | Name | CIDR | Netmask | VLAN | Actions |
+            
+    
+    Scenario: Create network
+        When I click project menu item "Networks"
+        Given I see page header "Global administration: Networks"
+        And I click button "Add"
+        When I type "16.16.16.0/24" in field "CIDR"
+        And I type "222" in field "VLAN"
+        And I click button "Create"
+        Then I see success notification "Network net222 created."
+        And I see page header "Global administration: Networks"
+        And I see in table:
+            | Name | CIDR | Netmask | VLAN | Actions |
+            | net222 | 16.16.16.0/24 | not_empty | 222 | delete |
+            
+    Scenario: Create project
+        When I click project menu item "Projects"
+        Given I see page header "Global administration: Projects"
+        When I click button "Add"
+        Then I see page header "Global administration: Projects"
+        Then I see page subheader "Add new project"
+        And I type "061-test-delete-me" in field "Name"
+        And I select "net222 (16.16.16.0/24, 222)" in field "Network"
+        And I click button "Create"
+        Then I see success notification "Project created."
+        
+    Scenario: Check network name was changed, I cannot delete network used for project
+        When I click project menu item "Networks"
+        And I see page header "Global administration: Networks"
+        And I see in table:
+            | Name | CIDR | Netmask | VLAN | Actions |
+            | 061-test-delete-me | 16.16.16.0/24 | not_empty | 222 | empty |
+             
+    Scenario: Check networks renamed back
+        When I click project menu item "Projects"
+        When I click "delete" in line containing "061-test-delete-me", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        I see page header "Global administration: Projects"
+        And I see success notification "Project removed successfully."
+        When I click top menu "Global administration"
+        When I click project menu item "Networks"
+        And I see in table:
+             | Name | CIDR | Netmask   | VLAN | Actions |
+             | net222 | 16.16.16.0/24 | not_empty | 222 | delete |
+
+    Scenario: Clean
+        When I click project menu item "Networks"
+        When I click "delete" in line containing "net222", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        And I see success notification "Network deleted."
+        And I see in table:
+            | Name | CIDR | Netmask | VLAN | Actions |

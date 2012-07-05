@@ -1,0 +1,19 @@
+Feature: Add images
+
+    Scenario: Navigate to Images administration page
+        Given I open page "/"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        And I click project menu item "Images"
+        Then I see page header "{{ projects.0.name }}: Project images"
+
+
+    Scenario: Create fixture image
+        And I click button "Add"
+        And I click radio button "Solid" in field "Upload type"
+        And I type "{{ image.name }}" in field "Name"
+        And I select file "{{ image.path }}" in "uploader"
+        And I click radio button "qcow2" in field "Disk format"
+        And I click button "Add"
+        I wait page refresh for "20" seconds
+        Then I see success notification "Image with name imagetestname-temp registered."

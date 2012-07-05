@@ -1,0 +1,96 @@
+Feature: Check security groups functionality
+
+    Scenario: Setup prerequisites
+        Require setup " login ! image ! network ! project "
+
+    Scenario: Check Security Groups page
+        Given I open page "/"
+        And I see page title "Altai Private Cloud"
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        And I see project menu item "Virtual Machines" active
+        When I click project menu item "Security Groups"
+        Then I see page header "{{ projects.0.name }}: Project security groups"
+        And I see page subheader "List of existing security groups"
+        And I see project menu item "Security Groups" active
+        Then I see table:
+            | Name    | Description | Actions |
+            | default | default     | delete  |
+
+        Then I remember table:
+            | Name    | Description | Actions |
+
+    Scenario: Check adding security group works as desired
+        I click project menu item "Security Groups"
+        And I see page subheader "List of existing security groups"
+        And I click button "Add"
+        Then I see page header "{{ projects.0.name }}: Project security groups"
+        And I see page subheader "Add new security group"
+        When I type "test-sg" in field "Name"
+        And I type "test-sg-desc" in field "Description"
+        And I click button "Create"
+        Then I see success notification "Security group test-sg created."
+        And I see page subheader "List of existing security groups"
+        And I see in table:
+            | Name    | Description  | Actions |
+            | test-sg | test-sg-desc | delete  |
+
+    Scenario: Check SG addition form works correctly
+        I click project menu item "Security Groups"
+        Given I see page subheader "List of existing security groups"
+        And I click button "Add"
+        Then I see page subheader "Add new security group"
+
+        And I click button "Create"
+        Then I see error tip "This field is required."
+
+        When I type "test-sg-1" in field "Name"
+        And I click button "Create"
+        Then I see error tip "This field is required."
+
+        When I type "" in field "Name"
+        And I type "desc sg-1" in field "Description"
+        And I click button "Create"
+        Then I see error tip "This field is required."
+
+        When I type "test-sg" in field "Name"
+        And I type "desc" in field "Description"
+        And I click button "Create"
+        Then I see error notification "Security group test-sg already exists"
+
+        When I type "test-sg-1" in field "Name"
+        And I type "test-sg-desc" in field "Description"
+        And I click button "Create"
+        Then I see success notification "Security group test-sg-1 created."
+        And I see page subheader "List of existing security groups"
+        And I see in table:
+            | Name      | Description  | Actions |
+            | test-sg   | test-sg-desc | delete  |
+            | test-sg-1 | test-sg-desc | delete  |
+
+    Scenario: Check security group details page
+        I click project menu item "Security Groups"
+        Given I see page subheader "List of existing security groups"
+        When I click "test-sg-1" in line containing "test-sg-1", row "Name"
+        Then I see page header "{{ projects.0.name }}: Project security groups"
+        And I see page subheader "Security group details"
+
+    Scenario: Check that security group can be deleted
+        I click project menu item "Security Groups"
+        Given I see page subheader "List of existing security groups"
+        When I click "delete" in line containing "test-sg-1", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        And I see success notification "Security group successfully deleted"
+        And I see page subheader "List of existing security groups"
+        And I see in table:
+            | Name | Description | Actions |
+            | test-sg   | test-sg-desc | delete  |
+
+    Scenario: Clean
+        I click project menu item "Security Groups"
+        Given I see page subheader "List of existing security groups"
+        When I click "delete" in line containing "test-sg", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        Then I see in table:
+            | Name | Description | Actions |
+

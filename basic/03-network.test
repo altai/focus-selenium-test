@@ -1,0 +1,134 @@
+Feature: Test network creation functionality
+    Scenario: Setup prerequisites
+        Require setup " login "
+
+    Scenario: Check Network administration page
+        Given I open page "/"
+        And I see page title "Altai Private Cloud"
+        When I click top menu "Global administration"
+        Then I see page header "Global administration: Virtual Machines"
+        And I see project menu item "Virtual machines" active
+        When I click project menu item "Networks"
+        Then I see page header "Global administration: Networks"
+        And I see project menu item "Networks" active
+        And I see page subheader "List of networks"
+        I remember table:
+            | Name | CIDR | Netmask | VLAN | Actions |
+    
+    Scenario: Check network mask lower than 24 will be converted exactly to 24
+        Given I see page header "Global administration: Networks"
+        And I click button "Add"
+        Then I see page header "Global administration: Networks"
+        And I see page subheader "Add new network"
+        When I type "192.168.242.0/22" in field "CIDR"
+        And I type "241" in field "VLAN"
+        And I click button "Create"
+        Then I see success notification "Network net241 created."
+        And I see page header "Global administration: Networks"
+        And I see in table:
+            | Name | CIDR | Netmask | VLAN | Actions |
+            | net241 | 192.168.240.0/24 | not_empty | 241 | delete |
+        
+    Scenario: Check adding network works as desired
+        When I click project menu item "Networks"
+        Given I see page header "Global administration: Networks"
+        And I click button "Add"
+        Then I see page header "Global administration: Networks"
+        And I see page subheader "Add new network"
+        When I type "15.15.15.0/26" in field "CIDR"
+        And I type "242" in field "VLAN"
+        And I click button "Create"
+        Then I see success notification "Network net242 created."
+        And I see page header "Global administration: Networks"
+        And I see in table:
+            | Name | CIDR | Netmask | VLAN | Actions |
+            | net241 | 192.168.240.0/24 | not_empty | 241 | delete |
+            | net242 | 15.15.15.0/26 | not_empty | 242 | delete |
+
+    Scenario: Check network addition form works correctly
+        When I click project menu item "Networks"
+        Given I see page header "Global administration: Networks"
+        When I click button "Add"
+        Then I see page subheader "Add new network"
+        And I click button "Create"
+        Then I see error tip "This field is required."
+        
+        And I type "192.168.234.0/26" in field "CIDR"
+        And I click button "Create"
+        Then I see error tip "Not in range 1 - 4096"
+
+        When I type "" in field "CIDR"
+        And I click button "Create"
+        And I type "234" in field "VLAN"
+        Then I see error tip "This field is required."
+
+        And I type "192.168.234.0" in field "CIDR"
+        And I type "234" in field "VLAN"
+        And I click button "Create"
+        Then I see error tip "Network size is lower then 4; use something like 10.1.1.1/30."
+
+        And I type "192.168.242.0/25" in field "CIDR"
+        And I type "242" in field "VLAN"
+        And I click button "Create"
+        Then I see error notification "Cannot create network. Detected existing vlan with id 242"
+
+        And I type "10.3.1.1/31" in field "CIDR"
+        And I type "243" in field "VLAN"
+        And I click button "Create"
+        Then I see error tip "Network size is lower then 4; use something like 10.1.1.1/30."
+
+        And I type "10.3.1.1/30" in field "CIDR"
+        And I type "243" in field "VLAN"
+        And I click button "Create"
+        Then I see success notification "Network net243 created."
+        And I see page header "Global administration: Networks"
+        And I see in table:
+            | Name | CIDR | Netmask | VLAN | Actions |
+            | net241 | 192.168.240.0/24 | not_empty | 241 | delete |
+            | net242 | 15.15.15.0/26 | not_empty | 242 | delete |
+            | net243 | 10.3.1.0/30 | not_empty | 243 | delete |
+
+        When I click project menu item "Networks"
+        I see page header "Global administration: Networks"
+        And I see in table:
+            | Name | CIDR | Netmask | VLAN | Actions |
+            | net241 | 192.168.240.0/24 | not_empty | 241 | delete |
+            | net242 | 15.15.15.0/26 | not_empty | 242 | delete |
+            | net243 | 10.3.1.0/30 | not_empty | 243 | delete |
+
+    Scenario: Check network details page
+        When I click project menu item "Networks"
+        Given I see page header "Global administration: Networks"
+        When I click "net242" in line containing "net242", row "Name"
+        Then I see "15.15.15.0/26" in line "CIDR"
+
+
+    Scenario: Check network actions works correctly
+        When I click project menu item "Networks"
+        And I see in table:
+            | Name | CIDR | Netmask | VLAN | Actions |
+            | net241 | 192.168.240.0/24 | not_empty | 241 | delete |
+            | net242 | 15.15.15.0/26 | not_empty | 242 | delete |
+            | net243 | 10.3.1.0/30 | not_empty | 243 | delete |
+        When I click "delete" in line containing "net241", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        I see page header "Global administration: Networks"
+        And I see success notification "Network deleted."
+        And I see in table:
+            | Name | CIDR | Netmask | VLAN | Actions |
+            | net242 | 15.15.15.0/26 | not_empty | 242 | delete |
+            | net243 | 10.3.1.0/30 | not_empty | 243 | delete |
+
+
+    Scenario: Clean
+        When I click project menu item "Networks"
+        Given I see page header "Global administration: Networks"
+        When I click "delete" in line containing "net242", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        And I see success notification "Network deleted."
+        And I see in table:
+            | Name | CIDR | Netmask | VLAN | Actions |
+            | net243 | 10.3.1.0/30 | not_empty | 243 | delete |
+        When I click "delete" in line containing "net243", row "Actions"
+        And I click modal dialog button "Yes, delete"
+        And I see success notification "Network deleted."

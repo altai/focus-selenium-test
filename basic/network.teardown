@@ -1,0 +1,12 @@
+Feature: Network cleaning
+
+    Scenario: Navigate to page
+        I open page "/"
+        When I click top menu "Global administration"
+
+{% for network in networks %}
+    Scenario: Remove all network
+        When I click project menu item "Networks"
+        When I click "delete" in line containing "{{ network.VLAN }}", row "Actions"
+        And I click modal dialog button "Yes, delete"
+{% endfor %}
