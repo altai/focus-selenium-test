@@ -1,0 +1,12 @@
+isyntax: glob
+
+*.py[co]
+logs
+*~
+.project
+.pydevproject
+.settings
+run.test
+screenshots
+local
+output
