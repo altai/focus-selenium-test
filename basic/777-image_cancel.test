@@ -1,0 +1,38 @@
+Feature: Test Global Upload image page cancel click
+
+    Scenario: Setup prerequisites
+        Require setup " login ! network ! project  "
+
+    Scenario: Check images administration page
+        Given I open page "/"
+        And I see page title "Altai Private Cloud"
+        When I click top menu "Global administration"
+	And I click project menu item "Images"
+        Then I see page header "Global administration: Images"
+        Then I see project menu item "Images" active
+	Then I see page subheader "List of existing images"
+	When I click button "Add"
+	Then I see page header "Global administration: Images"
+	Then I see project menu item "Images" active
+	Then I see page subheader "Add new image"
+	When I click button "Cancel"
+	Then I see page header "Global administration: Images"
+	Then I see project menu item "Images" active
+	Then I see page subheader "List of existing images"	
+
+   Scenario: Check images project page
+        When I click top menu "Dashboard"
+        And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+        And I click project menu item "Images"
+        Then I see page header "{{ projects.0.name }}: Project images"
+        Then I see project menu item "Images" active
+        Then I see page subheader "List of existing images"
+	When I click button "Add"
+	Then I see page header "{{ projects.0.name }}: Project images"
+	Then I see project menu item "Images" active
+	Then I see page subheader "Add new image"
+	When I click button "Cancel"
+	Then I see page header "{{ projects.0.name }}: Project images"
+	Then I see project menu item "Images" active
+	Then I see page subheader "List of existing images"	
+       
