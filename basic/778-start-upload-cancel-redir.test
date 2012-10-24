@@ -1,0 +1,30 @@
+Feature: Cancel strted Upload
+
+  Scenario: Setup prerequisites
+    Require setup " login "
+
+    Scenario: Check images administration page
+        Given I open page "/"
+        And I see page title "Altai Private Cloud"
+        When I click top menu "Global administration"
+        Then I see page header "Global administration: Virtual Machines"
+        When I click project menu item "Images"
+        Then I see page header "Global administration: Images"
+        Then I see project menu item "Images" active
+        And I remember table:
+            | Name | Container Format | Disk Format | Checksum | Size | Actions |
+
+    Scenario: Fill the form to add new image(Solid)
+        Given I see page header "Global administration: Images"
+        And I click button "Add"
+        And I click radio button "Solid" in field "Upload type"
+        And I type "imagetestname" in field "name"
+        And I select file "{{ image.path }}" in "uploader" and click cancel
+        Then I see empty input "#id_uploaded_file"
+        And I do not see selector ".cancel-upload"
+
+
+
+
+
+    
