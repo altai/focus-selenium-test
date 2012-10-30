@@ -1,0 +1,32 @@
+Feature: Test VM name autoescaped
+
+    Scenario: Setup prerequisites
+      Require setup " login ! image ! network ! project  "
+
+    Scenario: Navigate to instance page
+      Given I open page "/"
+      When I click top menu "Dashboard"
+      I see page title "Altai Private Cloud"
+      And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
+      And I click project menu item "Virtual Machines"
+      Then I see page header "{{ projects.0.name }}: Virtual Machines"
+      And I see page subheader "List of virtual machines"
+      And I see project menu item "Virtual Machines" active
+      And I remember table:
+            | Name | Status | User | Actions |
+
+    Scenario: Spawn VM and Check Name
+      Given I see page header "{{ projects.0.name  }}: Virtual Machines"
+      When I click project menu item "Virtual Machines"
+      And I click button "Add"
+      And I select "{{ image.name }}" in field "Image"
+      And I select "{{ instance.flavor }}" in field "Flavor"
+      And I type "<b>test</b>" in field "Name"
+      And I click button "Spawn it"
+      Then I see success notification "Virtual machine spawned."
+      I see page header "{{ projects.0.name }}: Virtual Machines"
+      And I see in table:
+            | Name                    | Status | User      | Actions                     |
+            | <b>test</b>             | BUILD  | not_empty | delete reboot reset VNC log |
+
+
