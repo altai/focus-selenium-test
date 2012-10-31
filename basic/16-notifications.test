@@ -1,0 +1,13 @@
+Feature: Notifications smoke test.
+
+    Scenario: Setup prerequisites
+        Require setup " login "
+
+    Scenario: Open a notification editor
+        Given I open page "/"
+        And I see page title "Altai Private Cloud"
+        When I click top menu "Global administration"
+        When I click project menu item "Notifications"
+        Then I see page header "Global administration: Notifications"
+        When I click "Free disk space on /" in line containing "Free disk space on /", row "Name"
+        Then I see page subheader "Edit notification for Free disk space on /"
