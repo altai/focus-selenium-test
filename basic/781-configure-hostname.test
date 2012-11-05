@@ -1,0 +1,147 @@
+Feature: Test Configuring Invitation Hostname
+
+    Scenario: Login as admin
+        I open browser
+        Given I open page "/"
+        And I type "{{ admin.login }}" in field "email"
+        And I type "{{ admin.password }}" in field "password"
+        And I click button "Sign in"
+        Then I see page title "Altai Private Cloud"
+
+    Scenario: Open login page
+        When I open page "/"
+        When I click top menu "Global administration"
+        And I click project menu item "Users"
+        And I click "delete" in line containing "{{ member.username }}", row "Actions"
+        And I click modal dialog button "Yes, delete"
+
+    Scenario: Check hostname from settings is used in email
+        Given I open page "/"
+        And I see page title "Altai Private Cloud"
+        When I click top menu "Invite"
+        And I type "{{ member.login }}" in field "Email"
+        And I select "{{ member.role }}" in field "Role"
+        And I click button "Invite"
+        And I see info notification "Invitation sent successfully"
+        Then I see "{{ configured_hostname }}" in last email as "{{ member.login }}", "{{ member.password }}"
+
+    Scenario: Check hostname from settings is shown in form by default
+        Given I open page "/"
+        And I click project menu item "App Hostname"
+        Then I see "{{ configured_hostname }}" in form field "hostname"
+
+    Scenario: Try save wrong value
+        When I type "" in field "hostname"
+        And I click button "Save"
+        Then I see error tip "Hostname required"
+        When I type "ftp://goobar.com/" in field "hostname"
+        And I click button "Save"
+        Then I see error tip "Forbidden protocol: ftp"
+
+    Scenario: Check hostname from settings is used in email
+        When I click top menu "Invite"
+        And I type "{{ member.login }}" in field "Email"
+        And I select "{{ member.role }}" in field "Role"
+        And I click button "Invite"
+        And I see info notification "Invitation sent successfully"
+        Then I see "{{ configured_hostname }}" in last email as "{{ member.login }}", "{{ member.password }}"
+
+    Scenario: Save bare hostname
+        Given I open page "/"
+        And I click project menu item "App Hostname"
+        When I type "goobar.com" in field "hostname"
+        And I click button "Save"
+        Then I see success notification "Hostname http://goobar.com configured"
+        And I see project menu item "App Hostname" active
+        And I see "http://goobar.com" in form field "hostname"
+
+    Scenario: Check http proto and saved hostname are used in email
+        When I click top menu "Invite"
+        And I type "{{ member.login }}" in field "Email"
+        And I select "{{ member.role }}" in field "Role"
+        And I click button "Invite"
+        And I see info notification "Invitation sent successfully"
+        Then I see "http://goobar.com" in last email as "{{ member.login }}", "{{ member.password }}"
+
+    Scenario: Save another domain with http proto
+        Given I open page "/"
+        And I click project menu item "App Hostname"
+        When I type "http://foobar.com" in field "hostname"
+        And I click button "Save"
+        Then I see success notification "Hostname http://foobar.com configured"
+        And I see project menu item "App Hostname" active
+        And I see "http://foobar.com" in form field "hostname"
+
+    Scenario: Check http proto and new hostname are used in email
+        When I click top menu "Invite"
+        And I type "{{ member.login }}" in field "Email"
+        And I select "{{ member.role }}" in field "Role"
+        And I click button "Invite"
+        And I see info notification "Invitation sent successfully"
+        Then I see "http://foobar.com" in last email as "{{ member.login }}", "{{ member.password }}"
+
+    Scenario: Save yet another hostname with https proto
+        Given I open page "/"
+        And I click project menu item "App Hostname"
+        When I type "https://hoobar.com" in field "hostname"
+        And I click button "Save"
+        Then I see success notification "Hostname https://hoobar.com configured"
+        And I see project menu item "App Hostname" active
+        And I see "https://hoobar.com" in form field "hostname"
+
+    Scenario: Check https proto and newest hostname are used in email
+        When I click top menu "Invite"
+        And I type "{{ member.login }}" in field "Email"
+        And I select "{{ member.role }}" in field "Role"
+        And I click button "Invite"
+        And I see info notification "Invitation sent successfully"
+        Then I see "https://hoobar.com" in last email as "{{ member.login }}", "{{ member.password }}"
+
+    Scenario: Strip trailing slashes
+        Given I open page "/"
+        And I click project menu item "App Hostname"
+        When I type "https://moobar.com//" in field "hostname"
+        And I click button "Save"
+        Then I see success notification "Hostname https://moobar.com configured"
+        And I see project menu item "App Hostname" active
+        And I see "https://moobar.com" in form field "hostname"
+
+    Scenario: Check https proto and newest hostname are used in email
+        When I click top menu "Invite"
+        And I type "{{ member.login }}" in field "Email"
+        And I select "{{ member.role }}" in field "Role"
+        And I click button "Invite"
+        And I see info notification "Invitation sent successfully"
+        Then I see "https://moobar.com" in last email as "{{ member.login }}", "{{ member.password }}"
+
+    Scenario: Clean
+        Given I open page "/"
+        And I click project menu item "App Hostname"
+        When I type "{{ configured_hostname }}" in field "hostname"
+        And I click button "Save"
+        Then I see success notification "Hostname {{ configured_hostname }} configured"
+        And I see project menu item "App Hostname" active
+        And I see "{{ configured_hostname }}" in form field "hostname"
+
+    Scenario: Send invitation
+        Given I open page "/"
+        I click top menu "Invite"
+        I type "{{ member.login }}" in field "Email"
+        I see "{{ member.role }}" in select "role"
+        I select "{{ member.role }}" in field "Role"
+        I click button "Invite"
+        I see info notification "Invitation sent successfully"
+        I click top menu "Logout"
+        I see success notification "You were logged out"
+
+    Scenario: Register member via invitation link
+        I wait 30 seconds
+        When I open invitation email as "{{ member.login }}", "{{ member.password }}"
+        I type "{{ member.password }}" in field "Password"
+        I click button "Register"
+        I see success notification "You were logged out"
+        When I type "{{ member.login }}" in field "email"
+        And I type "{{ member.password }}" in field "password"
+        And I click button "Sign in"
+        And I see success notification "You were logged in successfully."
+        I click top menu "Dashboard"

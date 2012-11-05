@@ -552,6 +552,7 @@ def click_top_menu(step, top_menu_text):
         lambda d: d.find_element_by_css_selector(
             PAGE_BLOCKS["top_menu"]).find_element_by_partial_link_text(top_menu_text))
     StepAssert(step).assert_true(top_menu.is_enabled(), 'Top menu item "%s" is disabled' % top_menu_text)
+    time.sleep(2)
     top_menu.click()
 
 
