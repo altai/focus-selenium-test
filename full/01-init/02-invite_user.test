@@ -16,6 +16,7 @@ Feature: Check user invitation process. Invite user
         Given I open page "/"
         I click top menu "Invite"
         I type "{{ member.login }}" in field "Email"
+        I see "{{ member.role }}" in select "role"
         I select "{{ member.role }}" in field "Role"
         I click button "Invite"
         I see info notification "Invitation sent successfully"

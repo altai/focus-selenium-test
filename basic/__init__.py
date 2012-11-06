@@ -477,6 +477,13 @@ def type_in_field(step, keys, field):
     el.clear()
     el.send_keys(keys)
 
+@step(u'I see "(.*)" in select "(.*)"')
+@screen_on_failure
+def check_selected_option(step, text, name):
+    world.selenium['wait'].until(lambda d: d.find_element_by_css_selector("select[name=%s]" % name).is_displayed())
+    selected = world.selenium['browser'].find_elements_by_css_selector("select[name=%s] option" % name)
+    StepAssert(step).assert_not_equals(len(selected), 0)
+    StepAssert(step).assert_equals(selected[0].text, text)
 
 @step(u'I see "(.*)" in select "(.*)"')
 @screen_on_failure
