@@ -6,3 +6,7 @@ Feature: Remove invited admin
         And I click project menu item "Users"
         And I click "delete" in line containing "{{ admin.username }}", row "Actions"
         And I click modal dialog button "Yes, delete"
+
+    Scenario: Logout
+        I click top menu "Logout"
+        I see success notification "You were logged out"

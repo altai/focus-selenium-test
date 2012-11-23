@@ -1,0 +1,141 @@
+Feature: Check Global Administration Menu
+
+    Scenario: Open login page
+        I open browser
+        When I open page "/login/"
+        Then I see page title "Altai Private Cloud"
+
+    Scenario: Login as admin
+        Given I see page title "Altai Private Cloud"
+        When I type "{{sys.login}}" in field "email"
+        And I type "{{sys.password}}" in field "password"
+        And I click button "Sign in"
+        Then I see success notification "You were logged in successfully."
+        And I see page header "Altai Private Cloud"
+
+    Scenario: Open Global administration
+        Given I open page "/"
+        I see page title "Altai Private Cloud"
+        I click top menu "Global administration"
+
+    Scenario: Check VM administration page
+        Given I see page title "Altai Private Cloud"
+        And I see page header "Global administration: Virtual Machines"
+        And I see project menu item "Virtual machines" active
+        And I see page subheader "List of virtual machines"
+        And I see table:
+            | ID | Name | Project Name | RAM |
+
+    Scenario: Check Billing administration page
+        Given I see page title "Altai Private Cloud"
+        When I click project menu item "Billing"
+        Then I see project menu item "Billing" active
+        And I see page subheader "Billing details for project systenant"
+
+    Scenario: Check images administration page
+        Given I see page title "Altai Private Cloud"
+        When I click project menu item "Images"
+        Then I see page header "Global administration: Images"
+        Then I see project menu item "Images" active
+        And I see page subheader "List of existing images"
+        And I see table:
+            | Name | Container Format | Disk Format | Checksum | Size | Actions |
+
+    Scenario: Check Users administration page
+        Given I see page title "Altai Private Cloud"
+        When I click project menu item "Users"
+        Then I see page header "Global administration: User management"
+        And I see project menu item "Users" active
+        And I see page subheader "List of users"
+        And I see table:
+            | Username | Email | Actions |
+            | admin | openstack-core@griddynamics.com | not_empty |
+
+    Scenario: Check Tarrifs administration page
+        Given I see page title "Altai Private Cloud"
+        When I click project menu item "Tariffs"
+        Then I see page header "Global administration: Tariffs"
+        And I see project menu item "Tariffs" active
+        And I see page subheader "List of tariffs"
+        And I see table:
+            | Tariff                   | Price, $ | Actions    |
+            | memory_mb (year * MB)    | 1.0      | edit price |
+            | vcpus (year * processor) | 1.0      | edit price |
+            | local_gb (year * GB)     | 1.0      | edit price |
+            | nova/volume (year * GB)  | 1.0      | edit price |
+            | glance/image (year * GB) | 1.0      | edit price |
+
+
+    Scenario: Check Projects administration page
+        Given I see page title "Altai Private Cloud"
+        When I click project menu item "Projects"
+        Then I see page header "Global administration: Projects"
+        Then I see project menu item "Projects" active
+        And I see page subheader "List of projects"
+        And I remember table:
+            | Project Name | Description | Enabled | Actions |
+
+
+    Scenario: Check Network administration page
+        Given I see page title "Altai Private Cloud"
+        When I click project menu item "Networks"
+        Then I see page header "Global administration: Networks"
+        And I see project menu item "Networks" active
+        And I see page subheader "List of networks"
+        And I see table:
+            | Name      | CIDR      | Netmask   | VLAN      | Actions   |
+            | not_empty | not_empty | not_empty | not_empty | not_empty |
+
+    Scenario: Check Notifications administration page
+        Given I see page title "Altai Private Cloud"
+        When I click project menu item "Notifications"
+        Then I see page header "Global administration: Notifications"
+        And I see project menu item "Notifications" active
+        And I see page subheader "List of notifications"
+        And I see table:
+          | Active | Name                            | Notified by | Addressees | Bound | Hysteresis | Threshold | Actions |
+          | +      | CPU $2 time                     | SMS         | empty      | 0     | 0          | 0         | delete  |
+          | +      | Free disk space on /            | SMS         | empty      | 20.0  | 0          | 0         | delete  |
+          | +      | Free memory, in %               | SMS         | empty      | 0     | 0          | 0         | delete  |
+          | +      | Free swap space in %            | SMS         | empty      | 20.0  | 0          | 0         | delete  |
+          | +      | Processor load (1 min average)  | SMS         | empty      | 0     | 0          | 0         | delete  |
+          | +      | Processor load (15 min average) | SMS         | empty      | 0     | 0          | 0         | delete  |
+          | +      | Processor load (5 min average)  | SMS         | empty      | 0     | 0          | 0         | delete  |
+          | +      | Used memory, in %               | SMS         | empty      | 20.0  | 0          | 0         | delete  |
+          | +      | CPU $2 time                     | E-mail         | empty      | 0     | 0          | 0         | delete  |
+          | +      | Free disk space on /            | E-mail         | empty      | 20.0  | 0          | 0         | delete  |
+          | +      | Free memory, in %               | E-mail         | empty      | 0     | 0          | 0         | delete  |
+          | +      | Free swap space in %            | E-mail         | empty      | 20.0  | 0          | 0         | delete  |
+          | +      | Processor load (1 min average)  | E-mail         | empty      | 0     | 0          | 0         | delete  |
+          | +      | Processor load (15 min average) | E-mail         | empty      | 0     | 0          | 0         | delete  |
+          | +      | Processor load (5 min average)  | E-mail         | empty      | 0     | 0          | 0         | delete  |
+          | +      | Used memory, in %               | E-mail         | empty      | 20.0  | 0          | 0         | delete  |
+
+    Scenario: Check Invitation Domains administration page
+        Given I see page title "Altai Private Cloud"
+        When I click project menu item "Invitation Domains"
+        Then I see page header "Global administration: Invitation domains"
+        And I see project menu item "Invitation Domains" active
+        And I see page subheader "Invitation domains list"
+        And I see table:
+          | Email domain     | Actions |
+          | griddynamics.com | delete  |
+
+    Scenario: Check Load History page
+        Given I see page title "Altai Private Cloud"
+        When I click project menu item "Load History"
+        Then I see page header "Global administration: Load history"
+        Then I see page subheader "CPU/Load Avg./Mem/free space/io-wait history of every compute node"
+        Then I see table:
+            | Hostname  | Zabbix Status | Compute Status | Links      |
+            | not_empty | on            | on             | show graph |
+
+
+    Scenario: Check hostname administtration page
+        Given I see page title "Altai Private Cloud"
+        When I click project menu item "App Hostname"
+        Then I see page header "Global Administration: App Hostname"
+        Then I see page subheader "Hostname for altai"
+
+    Scenario: Logout
+        I close browser

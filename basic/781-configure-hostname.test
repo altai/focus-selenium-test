@@ -15,6 +15,12 @@ Feature: Test Configuring Invitation Hostname
         And I click "delete" in line containing "{{ member.username }}", row "Actions"
         And I click modal dialog button "Yes, delete"
 
+    Scenario: Check hostname administration page
+        Given I see page title "Altai Private Cloud"
+        When I click project menu item "App Hostname"
+        Then I see page header "Global Administration: App Hostname"
+        Then I see page subheader "Hostname for altai"
+
     Scenario: Check hostname from settings is used in email
         Given I open page "/"
         And I see page title "Altai Private Cloud"

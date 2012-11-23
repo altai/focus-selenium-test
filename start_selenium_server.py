@@ -8,7 +8,7 @@ from openstackclient_base.client_set import ClientSet
 import argparse
 
 parser = argparse.ArgumentParser(description='Spawn selenium instance in just installed cloud.')
-parser.add_argument('--master', help='master node ip', default='172.18.40.105')
+parser.add_argument('--master', help='master node ip', default='172.18.40.107')
 parser.add_argument('--tenant', help='Tenant name', default='systenant')
 parser.add_argument('--login', help='login', default='admin')
 parser.add_argument('--password', help='password', default='topsecret')
@@ -79,9 +79,9 @@ else:
 
 
 try:
-    myflavor = client.nova.flavors.find(name="m1.small")
+    myflavor = client.nova.flavors.find(name="m1.medium")
 except:
-    print >> sys.stderr, "no m1.small flavor"
+    print >> sys.stderr, "no m1.medium flavor"
     sys.exit(1)
 
 try:

@@ -422,6 +422,12 @@ def screenshot(step, name):
     world.selenium['browser'].get_screenshot_as_file(os.path.join(get_current_bunch_dir(), 'screen_%s.png' % name))
 
 
+@step(u'I download file from url "(.*)" to file "(.*)"')
+def open_page(step, url, path):
+    out = bash('wget -c %s -O %s' % (url, path))
+    StepAssert(step).assert_true(out.successful())
+
+
 @step(u'I open page "(.*)"')
 @patch_browser
 def open_page(step, url):
@@ -618,9 +624,8 @@ def see_modal_dialog(step, modal_header, modal_data):
 @step(u'I see project menu item "(.*)" active')
 @screen_on_failure
 def see_project_menu_item(step, text):
-    world.selenium['wait'].until(lambda d: world.project_menu.find_element_by_partial_link_text(text).is_displayed())
-    active_element = world.project_menu.find_element_by_css_selector('li.active')
-    StepAssert(step).assert_equals(text, active_element.text)
+    active_element = world.selenium['wait'].until(lambda d: world.project_menu.find_element_by_css_selector('li.active'))
+    StepAssert(step).assert_equals(text.strip(), active_element.text.strip())
 
 
 @step(u'I see "(.*)" in line (.*)')
