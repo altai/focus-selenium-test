@@ -63,10 +63,10 @@ Feature: Test project1 users cannot see private images of project0
         I see table:
             | Name | Status | User | Actions | 
 
-    Scenario: Login as member3
+    Scenario: Login as member
         When I click top menu "Logout"
-        And I type "{{ member3.login }}" in field "email"
-        And I type "{{ member3.password }}" in field "password"
+        And I type "{{ member.login }}" in field "email"
+        And I type "{{ member.password }}" in field "password"
         And I click button "Sign in"
         Then I see page title "Altai Private Cloud"
 
@@ -107,10 +107,10 @@ Feature: Test project1 users cannot see private images of project0
     #############################################################
     #                             4                             #
     #############################################################
-    Scenario: Login as member3
+    Scenario: Login as member
         When I click top menu "Logout"
-        And I type "{{ member3.login }}" in field "email"
-        And I type "{{ member3.password }}" in field "password"
+        And I type "{{ member.login }}" in field "email"
+        And I type "{{ member.password }}" in field "password"
         And I click button "Sign in"
         Then I see page title "Altai Private Cloud"
         And I click "{{ projects.0.name }}" in line containing "{{ projects.0.name }}", row "Project name"
@@ -137,10 +137,10 @@ Feature: Test project1 users cannot see private images of project0
         I wait 10 seconds
         Then I see success notification "Image with name visibility-test-image-global registered."
 
-    Scenario: Login as member3
+    Scenario: Login as member
         When I click top menu "Logout"
-        And I type "{{ member3.login }}" in field "email"
-        And I type "{{ member3.password }}" in field "password"
+        And I type "{{ member.login }}" in field "email"
+        And I type "{{ member.password }}" in field "password"
         And I click button "Sign in"
         Then I see page title "Altai Private Cloud"
 

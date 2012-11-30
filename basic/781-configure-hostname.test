@@ -17,9 +17,9 @@ Feature: Test Configuring Invitation Hostname
 
     Scenario: Check hostname administration page
         Given I see page title "Altai Private Cloud"
-        When I click project menu item "App Hostname"
-        Then I see page header "Global Administration: App Hostname"
-        Then I see page subheader "Hostname for altai"
+        When I click project menu item "Focus URL"
+        Then I see page header "Global Administration: Focus URL"
+        Then I see page subheader "Network address of Altai UI"
 
     Scenario: Check hostname from settings is used in email
         Given I open page "/"
@@ -33,8 +33,8 @@ Feature: Test Configuring Invitation Hostname
 
     Scenario: Check hostname from settings is shown in form by default
         Given I open page "/"
-        And I click project menu item "App Hostname"
-        Then I see "{{ configured_hostname }}" in form field "hostname"
+        And I click project menu item "Focus URL"
+        Then I see "http://{{ configured_hostname }}" in form field "hostname"
 
     Scenario: Try save wrong value
         When I type "" in field "hostname"
@@ -54,11 +54,11 @@ Feature: Test Configuring Invitation Hostname
 
     Scenario: Save bare hostname
         Given I open page "/"
-        And I click project menu item "App Hostname"
+        And I click project menu item "Focus URL"
         When I type "goobar.com" in field "hostname"
         And I click button "Save"
         Then I see success notification "Hostname http://goobar.com configured"
-        And I see project menu item "App Hostname" active
+        And I see project menu item "Focus URL" active
         And I see "http://goobar.com" in form field "hostname"
 
     Scenario: Check http proto and saved hostname are used in email
@@ -71,11 +71,11 @@ Feature: Test Configuring Invitation Hostname
 
     Scenario: Save another domain with http proto
         Given I open page "/"
-        And I click project menu item "App Hostname"
+        And I click project menu item "Focus URL"
         When I type "http://foobar.com" in field "hostname"
         And I click button "Save"
         Then I see success notification "Hostname http://foobar.com configured"
-        And I see project menu item "App Hostname" active
+        And I see project menu item "Focus URL" active
         And I see "http://foobar.com" in form field "hostname"
 
     Scenario: Check http proto and new hostname are used in email
@@ -88,11 +88,11 @@ Feature: Test Configuring Invitation Hostname
 
     Scenario: Save yet another hostname with https proto
         Given I open page "/"
-        And I click project menu item "App Hostname"
+        And I click project menu item "Focus URL"
         When I type "https://hoobar.com" in field "hostname"
         And I click button "Save"
         Then I see success notification "Hostname https://hoobar.com configured"
-        And I see project menu item "App Hostname" active
+        And I see project menu item "Focus URL" active
         And I see "https://hoobar.com" in form field "hostname"
 
     Scenario: Check https proto and newest hostname are used in email
@@ -105,11 +105,11 @@ Feature: Test Configuring Invitation Hostname
 
     Scenario: Strip trailing slashes
         Given I open page "/"
-        And I click project menu item "App Hostname"
+        And I click project menu item "Focus URL"
         When I type "https://moobar.com//" in field "hostname"
         And I click button "Save"
         Then I see success notification "Hostname https://moobar.com configured"
-        And I see project menu item "App Hostname" active
+        And I see project menu item "Focus URL" active
         And I see "https://moobar.com" in form field "hostname"
 
     Scenario: Check https proto and newest hostname are used in email
@@ -122,12 +122,12 @@ Feature: Test Configuring Invitation Hostname
 
     Scenario: Clean
         Given I open page "/"
-        And I click project menu item "App Hostname"
+        And I click project menu item "Focus URL"
         When I type "{{ configured_hostname }}" in field "hostname"
         And I click button "Save"
-        Then I see success notification "Hostname {{ configured_hostname }} configured"
-        And I see project menu item "App Hostname" active
-        And I see "{{ configured_hostname }}" in form field "hostname"
+        Then I see success notification "Hostname http://{{ configured_hostname }} configured"
+        And I see project menu item "Focus URL" active
+        And I see "http://{{ configured_hostname }}" in form field "hostname"
 
     Scenario: Send invitation
         Given I open page "/"

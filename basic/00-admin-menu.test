@@ -25,6 +25,7 @@ Feature: Check Global Administration Menu
         And I see page subheader "List of virtual machines"
         And I see table:
             | ID | Name | Project Name | RAM |
+            | not_empty | selenium-instance | systenant | not_empty |
 
     Scenario: Check Billing administration page
         Given I see page title "Altai Private Cloud"
@@ -40,6 +41,7 @@ Feature: Check Global Administration Menu
         And I see page subheader "List of existing images"
         And I see table:
             | Name | Container Format | Disk Format | Checksum | Size | Actions |
+            | selenium-img | ovf | qcow2 | not_empty | not_empty | delete |
 
     Scenario: Check Users administration page
         Given I see page title "Altai Private Cloud"
@@ -96,20 +98,20 @@ Feature: Check Global Administration Menu
           | Active | Name                            | Notified by | Addressees | Bound | Hysteresis | Threshold | Actions |
           | +      | CPU $2 time                     | SMS         | empty      | 0     | 0          | 0         | delete  |
           | +      | Free disk space on /            | SMS         | empty      | 20.0  | 0          | 0         | delete  |
-          | +      | Free memory, in %               | SMS         | empty      | 0     | 0          | 0         | delete  |
-          | +      | Free swap space in %            | SMS         | empty      | 20.0  | 0          | 0         | delete  |
-          | +      | Processor load (1 min average)  | SMS         | empty      | 0     | 0          | 0         | delete  |
-          | +      | Processor load (15 min average) | SMS         | empty      | 0     | 0          | 0         | delete  |
-          | +      | Processor load (5 min average)  | SMS         | empty      | 0     | 0          | 0         | delete  |
-          | +      | Used memory, in %               | SMS         | empty      | 20.0  | 0          | 0         | delete  |
+          | +      | Free memory, in %               | SMS         | empty      | 40.0  | 0          | 0         | delete  |
+          | +      | Free swap space in %            | SMS         | empty      | 60.0  | 0          | 0         | delete  |
+          | +      | Processor load (1 min average)  | SMS         | empty      | 40.0  | 0          | 0         | delete  |
+          | +      | Processor load (15 min average) | SMS         | empty      | 40.0  | 0          | 0         | delete  |
+          | +      | Processor load (5 min average)  | SMS         | empty      | 40.0  | 0          | 0         | delete  |
+          | +      | Used memory, in %               | SMS         | empty      | 60.0  | 0          | 0         | delete  |
           | +      | CPU $2 time                     | E-mail         | empty      | 0     | 0          | 0         | delete  |
           | +      | Free disk space on /            | E-mail         | empty      | 20.0  | 0          | 0         | delete  |
-          | +      | Free memory, in %               | E-mail         | empty      | 0     | 0          | 0         | delete  |
-          | +      | Free swap space in %            | E-mail         | empty      | 20.0  | 0          | 0         | delete  |
-          | +      | Processor load (1 min average)  | E-mail         | empty      | 0     | 0          | 0         | delete  |
-          | +      | Processor load (15 min average) | E-mail         | empty      | 0     | 0          | 0         | delete  |
-          | +      | Processor load (5 min average)  | E-mail         | empty      | 0     | 0          | 0         | delete  |
-          | +      | Used memory, in %               | E-mail         | empty      | 20.0  | 0          | 0         | delete  |
+          | +      | Free memory, in %               | E-mail         | empty      | 40.0  | 0          | 0         | delete  |
+          | +      | Free swap space in %            | E-mail         | empty      | 60.0  | 0          | 0         | delete  |
+          | +      | Processor load (1 min average)  | E-mail         | empty      | 40.0  | 0          | 0         | delete  |
+          | +      | Processor load (15 min average) | E-mail         | empty      | 40.0  | 0          | 0         | delete  |
+          | +      | Processor load (5 min average)  | E-mail         | empty      | 40.0  | 0          | 0         | delete  |
+          | +      | Used memory, in %               | E-mail         | empty      | 60.0  | 0          | 0         | delete  |
 
     Scenario: Check Invitation Domains administration page
         Given I see page title "Altai Private Cloud"
@@ -133,9 +135,9 @@ Feature: Check Global Administration Menu
 
     Scenario: Check hostname administtration page
         Given I see page title "Altai Private Cloud"
-        When I click project menu item "App Hostname"
-        Then I see page header "Global Administration: App Hostname"
-        Then I see page subheader "Hostname for altai"
+        When I click project menu item "Focus URL"
+        Then I see page header "Global Administration: Focus URL"
+        Then I see page subheader "Network address of Altai UI"
 
     Scenario: Logout
         I close browser

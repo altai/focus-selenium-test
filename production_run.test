@@ -4,11 +4,12 @@ TESTS=$1
 echo "Running tests: $TESTS"
 
 
-WEBREPORTS=/var/www/reports/$JOB_NAME/$BUILD_NUMBER
+WEBREPORTS=/var/www/html/reports/$JOB_NAME/$BUILD_NUMBER
 REPORTS=$WEBREPORTS/raw
 mkdir -p $REPORTS
 WEBPATH="$(hostname -f)${WEBREPORTS#/var/www/html}"
 
+SELENIUM=10.109.0.3
 retcode=1
 
 
@@ -20,12 +21,8 @@ FULL_LIST="02-as_admin
 echo "Starting selenium instance...."
 python ./start_selenium_server.py --master $MASTER_NODE_NAME
 echo "Starting SSH tunnel to node...."
-<<<<<<< HEAD
-netstat -anp|grep "4444:172.19.10.3:4444" || ssh root@$MASTER_NODE_NAME -f -N -L 4444:172.19.10.3:4444
-=======
 ps aux | grep "4444:$SELENIUM:4444" || ssh root@$MASTER_NODE_NAME -f -N -L 4444:$SELENIUM:4444
 ps aux | grep "2222:$SELENIUM:22" || ssh root@$MASTER_NODE_NAME -f -N -L 2222:$SELENIUM:22
->>>>>>> 631d130... drop sensitive data
 echo "Done"
 
 SUCCESS=0

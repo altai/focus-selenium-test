@@ -8,14 +8,14 @@ from openstackclient_base.client_set import ClientSet
 import argparse
 
 parser = argparse.ArgumentParser(description='Spawn selenium instance in just installed cloud.')
-parser.add_argument('--master', help='master node ip', default='172.18.40.107')
+parser.add_argument('--master', help='master node ip', default='10.0.0.103')
 parser.add_argument('--tenant', help='Tenant name', default='systenant')
 parser.add_argument('--login', help='login', default='admin')
 parser.add_argument('--password', help='password', default='topsecret')
 
-parser.add_argument('--net', help='Network to use with tenant', default='172.19.10.0/24')
+parser.add_argument('--net', help='Network to use with tenant', default='10.109.0.0/24')
 parser.add_argument('--vlan', help='VLAN to use with network', default='3310')
-parser.add_argument('--image', help='URL for image to download and register in cloud', default='http://osc-build.vm.griddynamics.net/images/selenium-server.qcow2')
+parser.add_argument('--image', help='URL for image to download and register in cloud', default='http://10.100.0.3/images/selenium-server.qcow2')
 cloud = parser.parse_args()
 
 
