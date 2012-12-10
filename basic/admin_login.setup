@@ -7,7 +7,7 @@ Feature: Login as admin
 
     Scenario: Try to login
         Given I see page title "Altai Private Cloud"
-        When I type "{{admin.login}}" in field "email"
+        When I type "{{admin.login}}" in field "login"
         And I type "{{admin.password}}" in field "password"
         And I click button "Sign in"
         Then I see success notification "You were logged in successfully."

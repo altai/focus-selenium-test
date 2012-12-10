@@ -7,7 +7,7 @@ Feature: Check Global Administration Menu
 
     Scenario: Login as admin
         Given I see page title "Altai Private Cloud"
-        When I type "{{sys.login}}" in field "email"
+        When I type "{{sys.login}}" in field "login"
         And I type "{{sys.password}}" in field "password"
         And I click button "Sign in"
         Then I see success notification "You were logged in successfully."

@@ -7,7 +7,7 @@ Feature: Login as User
 
     Scenario: Try to login
         #Given I see page title "Altai Private Cloud"
-        When I type "{{member.login}}" in field "email"
+        When I type "{{member.login}}" in field "login"
         And I type "{{member.password}}" in field "password"
         And I click button "Sign in"
         #Then I see page title "Altai Private Cloud"

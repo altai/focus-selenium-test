@@ -7,7 +7,7 @@ Feature: Check user invitation process. Invite admin user
 
     Scenario: Login as sys admin and invite tests admin
         Given I see page title "Altai Private Cloud"
-        When I type "{{sys.login}}" in field "email"
+        When I type "{{sys.login}}" in field "login"
         And I type "{{sys.password}}" in field "password"
         And I click button "Sign in"
         Then I see page header "Altai Private Cloud"
@@ -30,7 +30,7 @@ Feature: Check user invitation process. Invite admin user
         I type "{{ admin.password }}" in field "Password"
         I click button "Register"
         I see success notification "You were logged out"
-        When I type "{{ admin.login }}" in field "email"
+        When I type "{{ admin.login }}" in field "login"
         And I type "{{ admin.password }}" in field "password"
         And I click button "Sign in"
         #Then I see page title "Altai Private Cloud"

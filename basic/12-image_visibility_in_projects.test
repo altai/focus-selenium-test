@@ -6,7 +6,7 @@ Feature: Test project1 users cannot see private images of project0
     Scenario: Login as admin
         I open browser
         Given I open page "/"
-        And I type "{{ admin.login }}" in field "email"
+        And I type "{{ admin.login }}" in field "login"
         And I type "{{ admin.password }}" in field "password"
         And I click button "Sign in"
         Then I see page title "Altai Private Cloud"
@@ -65,7 +65,7 @@ Feature: Test project1 users cannot see private images of project0
 
     Scenario: Login as member
         When I click top menu "Logout"
-        And I type "{{ member.login }}" in field "email"
+        And I type "{{ member.login }}" in field "login"
         And I type "{{ member.password }}" in field "password"
         And I click button "Sign in"
         Then I see page title "Altai Private Cloud"
@@ -99,7 +99,7 @@ Feature: Test project1 users cannot see private images of project0
 
     Scenario: Login as admin
         When I click top menu "Logout"
-        And I type "{{ admin.login }}" in field "email"
+        And I type "{{ admin.login }}" in field "login"
         And I type "{{ admin.password }}" in field "password"
         And I click button "Sign in"
         Then I see page title "Altai Private Cloud"
@@ -109,7 +109,7 @@ Feature: Test project1 users cannot see private images of project0
     #############################################################
     Scenario: Login as member
         When I click top menu "Logout"
-        And I type "{{ member.login }}" in field "email"
+        And I type "{{ member.login }}" in field "login"
         And I type "{{ member.password }}" in field "password"
         And I click button "Sign in"
         Then I see page title "Altai Private Cloud"
@@ -120,7 +120,7 @@ Feature: Test project1 users cannot see private images of project0
 
     Scenario: Login as admin
         When I click top menu "Logout"
-        And I type "{{ admin.login }}" in field "email"
+        And I type "{{ admin.login }}" in field "login"
         And I type "{{ admin.password }}" in field "password"
         And I click button "Sign in"
         Then I see page title "Altai Private Cloud"
@@ -139,7 +139,7 @@ Feature: Test project1 users cannot see private images of project0
 
     Scenario: Login as member
         When I click top menu "Logout"
-        And I type "{{ member.login }}" in field "email"
+        And I type "{{ member.login }}" in field "login"
         And I type "{{ member.password }}" in field "password"
         And I click button "Sign in"
         Then I see page title "Altai Private Cloud"
@@ -156,7 +156,7 @@ Feature: Test project1 users cannot see private images of project0
 
     Scenario: Relogin to admin
         When I click top menu "Logout"
-        And I type "{{ admin.login }}" in field "email"
+        And I type "{{ admin.login }}" in field "login"
         And I type "{{ admin.password }}" in field "password"
         And I click button "Sign in"
         Then I see page title "Altai Private Cloud"
