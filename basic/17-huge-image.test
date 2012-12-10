@@ -5,13 +5,23 @@ Feature: Test Global Upload image page with BIG images
 
     Scenario: Prepare solid image
         I download file from url "{{ image.solid.url }}" to file "{{ image.solid.path }}"
-        I execute command "qemu-img resize {{ image.solid.path }} 5G"
+        I execute on selenium node command "qemu-img convert -O raw {{ image.solid.path }} {{ image.solid.path }}.raw"
+        I execute on selenium node command "qemu-img create {{ image.solid.path }}.temp 1G"
+        I execute on selenium node command "'cat {{ image.solid.path }}.temp >> {{ image.solid.path }}.raw'"
+        I execute on selenium node command "mv -f {{ image.solid.path }}.raw {{ image.solid.path }}"
+
+#        I execute on selenium node command "wget {{ image.solid.url }} {{ image.solid.path }} && qemu-img resize {{ image.solid.path }} 100M"
 
     Scenario: Prepare amazon image
         I download file from url "{{ image.amazon.initrd.url }}" to file "{{ image.amazon.initrd.path }}"
         I download file from url "{{ image.amazon.kernel.url }}" to file "{{ image.amazon.kernel.path }}"
         I download file from url "{{ image.amazon.rootfs.url }}" to file "{{ image.amazon.rootfs.path }}"
-        I execute command "qemu-img resize {{ image.amazon.rootfs.path }} 5G"
+        I execute on selenium node command "qemu-img convert -O raw {{ image.amazon.rootfs.path }} {{ image.amazon.rootfs.path }}.raw"
+        I execute on selenium node command "qemu-img create {{ image.amazon.rootfs.path }}.temp 1G"
+        I execute on selenium node command "'cat {{ image.amazon.rootfs.path }}.temp >> {{ image.amazon.rootfs.path }}.raw'"
+        I execute on selenium node command "mv -f {{ image.amazon.rootfs.path }}.raw {{ image.amazon.rootfs.path }}"
+
+#        I execute on selenium node command "wget {{ image.amazon.rootfs.url }} {{ image.amazon.rootfs.path }} && qemu-img resize {{ image.amazon.rootfs.path }} 100M"
 
     Scenario: Navigate to images administration page
         Given I open page "/"
@@ -54,7 +64,7 @@ Feature: Test Global Upload image page with BIG images
         And I see success notification "Image with name big-image-solid-adm registered."
         And I see in table:
             | Name                | Container Format | Disk Format | Checksum  | Size  | Actions |
-            | big-image-solid-adm | bare             | qcow2       | not_empty | 5.00G |  delete |
+            | big-image-solid-adm | bare             | qcow2       | not_empty | 1.00G |  delete |
 
     Scenario: Fill the form to add new image(Amazon Like)
         Given I see page header "Global administration: Images"

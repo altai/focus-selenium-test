@@ -401,6 +401,12 @@ def execute_on_master(step, cmd):
     print out.output_text()
     StepAssert(step).assert_true(out.successful())
 
+@step(u'I execute on selenium node command "(.*)"')
+def execute_on_selenium(step, cmd):
+    out = bash('ssh %s -A -p 2222 root@localhost %s' % (SSH_OPTS, cmd))
+    print out.output_text()
+    StepAssert(step).assert_true(out.successful())
+
 @step(u'I execute on instance "(.*)" command "(.*)"')
 def execute_on_master(step, instance_name, cmd):
     bash('chmod 600 %s' % SSH_PRIVATE_KEY_PATH)
