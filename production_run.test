@@ -21,8 +21,11 @@ FULL_LIST="02-as_admin
 echo "Starting selenium instance...."
 python ./start_selenium_server.py --master $MASTER_NODE_NAME
 echo "Starting SSH tunnel to node...."
-ps aux | grep "4444:$SELENIUM:4444" || ssh root@$MASTER_NODE_NAME -f -N -L 4444:$SELENIUM:4444
-ps aux | grep "2222:$SELENIUM:22" || ssh root@$MASTER_NODE_NAME -f -N -L 2222:$SELENIUM:22
+ps_aux=$(mktemp)
+ps aux > $ps_aux
+grep "4444:$SELENIUM:4444" $ps_aux || ssh root@$MASTER_NODE_NAME -f -N -L 4444:$SELENIUM:4444
+grep "2222:$SELENIUM:22" $ps_aux || ssh root@$MASTER_NODE_NAME -f -N -L 2222:$SELENIUM:22
+rm $ps_aux
 echo "Done"
 
 SUCCESS=0
