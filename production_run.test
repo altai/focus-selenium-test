@@ -7,7 +7,7 @@ echo "Running tests: $TESTS"
 WEBREPORTS=/var/www/html/reports/$JOB_NAME/$BUILD_NUMBER
 REPORTS=$WEBREPORTS/raw
 mkdir -p $REPORTS
-WEBPATH="$(hostname -f)${WEBREPORTS#/var/www/html}"
+WEBPATH="http://$(hostname -f)${WEBREPORTS#/var/www/html}"
 
 SELENIUM=10.109.0.3
 retcode=1
