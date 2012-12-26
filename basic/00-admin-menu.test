@@ -96,22 +96,22 @@ Feature: Check Global Administration Menu
         And I see page subheader "List of notifications"
         And I see table:
           | Active | Name                            | Notified by | Addressees | Bound | Hysteresis | Threshold | Actions |
-          | +      | CPU $2 time                     | SMS         | empty      | 0     | 0          | 0         | delete  |
-          | +      | Free disk space on /            | SMS         | empty      | 20.0  | 0          | 0         | delete  |
-          | +      | Free memory, in %               | SMS         | empty      | 40.0  | 0          | 0         | delete  |
-          | +      | Free swap space in %            | SMS         | empty      | 60.0  | 0          | 0         | delete  |
-          | +      | Processor load (1 min average)  | SMS         | empty      | 40.0  | 0          | 0         | delete  |
-          | +      | Processor load (15 min average) | SMS         | empty      | 40.0  | 0          | 0         | delete  |
-          | +      | Processor load (5 min average)  | SMS         | empty      | 40.0  | 0          | 0         | delete  |
-          | +      | Used memory, in %               | SMS         | empty      | 60.0  | 0          | 0         | delete  |
-          | +      | CPU $2 time                     | E-mail         | empty      | 0     | 0          | 0         | delete  |
-          | +      | Free disk space on /            | E-mail         | empty      | 20.0  | 0          | 0         | delete  |
-          | +      | Free memory, in %               | E-mail         | empty      | 40.0  | 0          | 0         | delete  |
-          | +      | Free swap space in %            | E-mail         | empty      | 60.0  | 0          | 0         | delete  |
-          | +      | Processor load (1 min average)  | E-mail         | empty      | 40.0  | 0          | 0         | delete  |
-          | +      | Processor load (15 min average) | E-mail         | empty      | 40.0  | 0          | 0         | delete  |
-          | +      | Processor load (5 min average)  | E-mail         | empty      | 40.0  | 0          | 0         | delete  |
-          | +      | Used memory, in %               | E-mail         | empty      | 60.0  | 0          | 0         | delete  |
+          | +      | CPU $2 time                     | SMS         | empty      | 0     | 60          | 0         | delete  |
+          | +      | Free disk space on /            | SMS         | empty      | 20.0  | 60          | 0         | delete  |
+          | +      | Free memory, in %               | SMS         | empty      | 40.0  | 60          | 0         | delete  |
+          | +      | Free swap space in %            | SMS         | empty      | 60.0  | 60          | 0         | delete  |
+          | +      | Processor load (1 min average)  | SMS         | empty      | 40.0  | 60          | 0         | delete  |
+          | +      | Processor load (15 min average) | SMS         | empty      | 40.0  | 60          | 0         | delete  |
+          | +      | Processor load (5 min average)  | SMS         | empty      | 40.0  | 60          | 0         | delete  |
+          | +      | Used memory, in %               | SMS         | empty      | 60.0  | 60          | 0         | delete  |
+          | +      | CPU $2 time                     | E-mail         | empty      | 0     | 60          | 0         | delete  |
+          | +      | Free disk space on /            | E-mail         | empty      | 20.0  | 60          | 0         | delete  |
+          | +      | Free memory, in %               | E-mail         | empty      | 40.0  | 60          | 0         | delete  |
+          | +      | Free swap space in %            | E-mail         | empty      | 60.0  | 60          | 0         | delete  |
+          | +      | Processor load (1 min average)  | E-mail         | empty      | 40.0  | 60          | 0         | delete  |
+          | +      | Processor load (15 min average) | E-mail         | empty      | 40.0  | 60          | 0         | delete  |
+          | +      | Processor load (5 min average)  | E-mail         | empty      | 40.0  | 60          | 0         | delete  |
+          | +      | Used memory, in %               | E-mail         | empty      | 60.0  | 60          | 0         | delete  |
 
     Scenario: Check Invitation Domains administration page
         Given I see page title "Altai Private Cloud"
